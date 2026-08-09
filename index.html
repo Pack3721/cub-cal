@@ -29,9 +29,7 @@
               <select value="{{selectedRank}}">
                 <option value="">— Select a rank —</option>
                 {{#each ranks}}
-                  {{#if hasDen || !slug}}
-                    <option value="{{slug}}">{{label}} — {{grade}}</option>
-                  {{/if}}
+                  <option value="{{slug}}">{{label}} — {{grade}}</option>
                 {{/each}}
               </select>
             </div>
