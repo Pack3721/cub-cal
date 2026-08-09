@@ -1,12 +1,12 @@
 var API_BASE = 'https://api.scouting.org/advancements/events/calendar/';
 
 var RANK_DEFS = [
-  { slug: 'lion',    label: 'Lion',           grade: 'Kindergarten', key: 'l'  },
-  { slug: 'tiger',   label: 'Tiger',          grade: '1st Grade',    key: 't'  },
-  { slug: 'wolf',    label: 'Wolf',           grade: '2nd Grade',    key: 'w'  },
-  { slug: 'bear',    label: 'Bear',           grade: '3rd Grade',    key: 'b'  },
-  { slug: 'webelos', label: 'Webelos',        grade: '4th Grade',    key: 'we' },
-  { slug: 'aol',     label: 'Arrow of Light', grade: '5th Grade',    key: 'a'  },
+  { slug: 'lion',    label: 'Lion',           grade: 'Kindergarten', key: 'l',  numKey: 'ld'  },
+  { slug: 'tiger',   label: 'Tiger',          grade: '1st Grade',    key: 't',  numKey: 'td'  },
+  { slug: 'wolf',    label: 'Wolf',           grade: '2nd Grade',    key: 'w',  numKey: 'wd'  },
+  { slug: 'bear',    label: 'Bear',           grade: '3rd Grade',    key: 'b',  numKey: 'bd'  },
+  { slug: 'webelos', label: 'Webelos',        grade: '4th Grade',    key: 'we', numKey: 'wed' },
+  { slug: 'aol',     label: 'Arrow of Light', grade: '5th Grade',    key: 'a',  numKey: 'ad'  },
 ];
 
 function makeCalLink(app, url) {
@@ -18,6 +18,10 @@ function makeCalLink(app, url) {
   return webcal;
 }
 
+function denDisplayName(label, denNum) {
+  return denNum ? label + ' Den ' + denNum : label + ' Den';
+}
+
 window.addEventListener('DOMContentLoaded', function () {
   var params   = new URLSearchParams(window.location.search);
   var packId   = params.get('p') || '';
@@ -26,14 +30,17 @@ window.addEventListener('DOMContentLoaded', function () {
 
   var availableRanks = [];
   RANK_DEFS.forEach(function (r) {
-    var denId = params.get(r.key) || '';
+    var denId  = params.get(r.key)    || '';
+    var denNum = params.get(r.numKey) || '';
     if (denId && packId) {
       availableRanks.push({
-        slug:     r.slug,
-        label:    r.label,
-        grade:    r.grade,
-        denUrl:   API_BASE + packId + '/' + denId,
-        selected: false,
+        slug:        r.slug,
+        label:       r.label,
+        grade:       r.grade,
+        denNum:      denNum,
+        displayName: denDisplayName(r.label, denNum),
+        denUrl:      API_BASE + packId + '/' + denId,
+        selected:    false,
       });
     }
   });
@@ -59,9 +66,10 @@ window.addEventListener('DOMContentLoaded', function () {
           .filter(function (r) { return r.selected; })
           .map(function (r) {
             return {
-              label:      r.label,
-              grade:      r.grade,
-              denCalLink: makeCalLink(app, r.denUrl),
+              label:       r.label,
+              grade:       r.grade,
+              displayName: r.displayName,
+              denCalLink:  makeCalLink(app, r.denUrl),
             };
           });
       },

@@ -1,10 +1,10 @@
 var RANK_DEFS = [
-  { slug: 'lion',    label: 'Lion',           grade: 'Kindergarten', key: 'l',  field: 'lionUrl'    },
-  { slug: 'tiger',   label: 'Tiger',          grade: '1st Grade',    key: 't',  field: 'tigerUrl'   },
-  { slug: 'wolf',    label: 'Wolf',           grade: '2nd Grade',    key: 'w',  field: 'wolfUrl'    },
-  { slug: 'bear',    label: 'Bear',           grade: '3rd Grade',    key: 'b',  field: 'bearUrl'    },
-  { slug: 'webelos', label: 'Webelos',        grade: '4th Grade',    key: 'we', field: 'webelosUrl' },
-  { slug: 'aol',     label: 'Arrow of Light', grade: '5th Grade',    key: 'a',  field: 'aolUrl'     },
+  { slug: 'lion',    label: 'Lion',           grade: 'Kindergarten', key: 'l',  numKey: 'ld',  field: 'lionUrl',    numField: 'lionDenNum'    },
+  { slug: 'tiger',   label: 'Tiger',          grade: '1st Grade',    key: 't',  numKey: 'td',  field: 'tigerUrl',   numField: 'tigerDenNum'   },
+  { slug: 'wolf',    label: 'Wolf',           grade: '2nd Grade',    key: 'w',  numKey: 'wd',  field: 'wolfUrl',    numField: 'wolfDenNum'    },
+  { slug: 'bear',    label: 'Bear',           grade: '3rd Grade',    key: 'b',  numKey: 'bd',  field: 'bearUrl',    numField: 'bearDenNum'    },
+  { slug: 'webelos', label: 'Webelos',        grade: '4th Grade',    key: 'we', numKey: 'wed', field: 'webelosUrl', numField: 'webelosDenNum' },
+  { slug: 'aol',     label: 'Arrow of Light', grade: '5th Grade',    key: 'a',  numKey: 'ad',  field: 'aolUrl',     numField: 'aolDenNum'     },
 ];
 
 var PACK_URL_RE = /^https:\/\/api\.scouting\.org\/advancements\/events\/calendar\/(\d+)\/?$/;
@@ -20,21 +20,22 @@ function parseDenUrl(url) {
   return m ? { packId: m[1], denId: m[2] } : null;
 }
 
-function buildMainUrl(packId, packName, denIds) {
+function buildMainUrl(packId, packName, denIds, denNums) {
   var base = window.location.origin +
     window.location.pathname.replace(/\/generate\/?.*$/, '/');
   var params = new URLSearchParams();
   if (packId)   params.set('p', packId);
   if (packName) params.set('n', packName);
   RANK_DEFS.forEach(function (r) {
-    if (denIds[r.slug]) params.set(r.key, denIds[r.slug]);
+    if (denIds[r.slug])  params.set(r.key,    denIds[r.slug]);
+    if (denNums[r.slug]) params.set(r.numKey, denNums[r.slug]);
   });
   return base + '?' + params.toString();
 }
 
 window.addEventListener('DOMContentLoaded', function () {
   var data = { packName: '', packUrl: '' };
-  RANK_DEFS.forEach(function (r) { data[r.field] = ''; });
+  RANK_DEFS.forEach(function (r) { data[r.field] = ''; data[r.numField] = ''; });
 
   var ractive = new Ractive({
     target: '#app',
@@ -69,9 +70,13 @@ window.addEventListener('DOMContentLoaded', function () {
       generatedUrl: function () {
         var v = this.get('validation');
         if (!v.pack.id) return '';
-        var denIds = {};
-        RANK_DEFS.forEach(function (r) { if (v[r.slug].id) denIds[r.slug] = v[r.slug].id; });
-        return buildMainUrl(v.pack.id, this.get('packName'), denIds);
+        var denIds = {}, denNums = {};
+        RANK_DEFS.forEach(function (r) {
+          if (v[r.slug].id)             denIds[r.slug]  = v[r.slug].id;
+          var num = this.get(r.numField);
+          if (num)                      denNums[r.slug] = num;
+        }, this);
+        return buildMainUrl(v.pack.id, this.get('packName'), denIds, denNums);
       },
       qrUrl: function () {
         var url = this.get('generatedUrl');

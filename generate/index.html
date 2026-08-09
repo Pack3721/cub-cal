@@ -48,7 +48,11 @@
         <p class="help mb-4">Paste each den's Scoutbook calendar URL. Leave blank if no calendar yet.</p>
 
         <div class="field">
-          <label class="label is-small">Lion <span class="has-text-grey-light">— Kindergarten</span></label>
+          <div class="den-row">
+            <label class="label is-small">Lion <span class="has-text-grey-light">— Kindergarten</span></label>
+            <div class="den-num-wrap"><label class="label is-small">Den #</label>
+            <input class="input is-small den-num" type="number" min="1" max="99" placeholder="1" value="{{lionDenNum}}"></div>
+          </div>
           <div class="control">
             <input class="input is-small {{validation.lion.cls}}" type="text"
               placeholder="https://api.scouting.org/advancements/events/calendar/XXXXX/YYYYY"
@@ -58,7 +62,11 @@
         </div>
 
         <div class="field">
-          <label class="label is-small">Tiger <span class="has-text-grey-light">— 1st Grade</span></label>
+          <div class="den-row">
+            <label class="label is-small">Tiger <span class="has-text-grey-light">— 1st Grade</span></label>
+            <div class="den-num-wrap"><label class="label is-small">Den #</label>
+            <input class="input is-small den-num" type="number" min="1" max="99" placeholder="1" value="{{tigerDenNum}}"></div>
+          </div>
           <div class="control">
             <input class="input is-small {{validation.tiger.cls}}" type="text"
               placeholder="https://api.scouting.org/advancements/events/calendar/XXXXX/YYYYY"
@@ -68,7 +76,11 @@
         </div>
 
         <div class="field">
-          <label class="label is-small">Wolf <span class="has-text-grey-light">— 2nd Grade</span></label>
+          <div class="den-row">
+            <label class="label is-small">Wolf <span class="has-text-grey-light">— 2nd Grade</span></label>
+            <div class="den-num-wrap"><label class="label is-small">Den #</label>
+            <input class="input is-small den-num" type="number" min="1" max="99" placeholder="1" value="{{wolfDenNum}}"></div>
+          </div>
           <div class="control">
             <input class="input is-small {{validation.wolf.cls}}" type="text"
               placeholder="https://api.scouting.org/advancements/events/calendar/XXXXX/YYYYY"
@@ -78,7 +90,11 @@
         </div>
 
         <div class="field">
-          <label class="label is-small">Bear <span class="has-text-grey-light">— 3rd Grade</span></label>
+          <div class="den-row">
+            <label class="label is-small">Bear <span class="has-text-grey-light">— 3rd Grade</span></label>
+            <div class="den-num-wrap"><label class="label is-small">Den #</label>
+            <input class="input is-small den-num" type="number" min="1" max="99" placeholder="1" value="{{bearDenNum}}"></div>
+          </div>
           <div class="control">
             <input class="input is-small {{validation.bear.cls}}" type="text"
               placeholder="https://api.scouting.org/advancements/events/calendar/XXXXX/YYYYY"
@@ -88,7 +104,11 @@
         </div>
 
         <div class="field">
-          <label class="label is-small">Webelos <span class="has-text-grey-light">— 4th Grade</span></label>
+          <div class="den-row">
+            <label class="label is-small">Webelos <span class="has-text-grey-light">— 4th Grade</span></label>
+            <div class="den-num-wrap"><label class="label is-small">Den #</label>
+            <input class="input is-small den-num" type="number" min="1" max="99" placeholder="1" value="{{webelosDenNum}}"></div>
+          </div>
           <div class="control">
             <input class="input is-small {{validation.webelos.cls}}" type="text"
               placeholder="https://api.scouting.org/advancements/events/calendar/XXXXX/YYYYY"
@@ -98,7 +118,11 @@
         </div>
 
         <div class="field mb-0">
-          <label class="label is-small">Arrow of Light <span class="has-text-grey-light">— 5th Grade</span></label>
+          <div class="den-row">
+            <label class="label is-small">Arrow of Light <span class="has-text-grey-light">— 5th Grade</span></label>
+            <div class="den-num-wrap"><label class="label is-small">Den #</label>
+            <input class="input is-small den-num" type="number" min="1" max="99" placeholder="1" value="{{aolDenNum}}"></div>
+          </div>
           <div class="control">
             <input class="input is-small {{validation.aol.cls}}" type="text"
               placeholder="https://api.scouting.org/advancements/events/calendar/XXXXX/YYYYY"

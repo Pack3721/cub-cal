@@ -29,7 +29,7 @@
             {{#each availableRanks}}
               <label class="checkbox-label">
                 <input type="checkbox" checked="{{selected}}">
-                <span class="rank-name">{{label}}</span>
+                <span class="rank-name">{{displayName}}</span>
                 <span class="has-text-grey rank-grade">— {{grade}}</span>
               </label>
             {{/each}}
@@ -72,14 +72,14 @@
               {{#if ~/app === 'apple'}}
                 <a class="button is-info is-fullwidth cal-btn" href="{{denCalLink}}">
                   <span>
-                    <span class="cal-btn-title">Add {{label}} Den Calendar</span>
+                    <span class="cal-btn-title">Add {{displayName}} Calendar</span>
                     <span class="cal-btn-sub">{{grade}} den meetings and events</span>
                   </span>
                 </a>
               {{else}}
                 <a class="button is-info is-fullwidth cal-btn" href="{{denCalLink}}" target="_blank" rel="noopener">
                   <span>
-                    <span class="cal-btn-title">Add {{label}} Den Calendar</span>
+                    <span class="cal-btn-title">Add {{displayName}} Calendar</span>
                     <span class="cal-btn-sub">{{grade}} den meetings and events</span>
                   </span>
                 </a>

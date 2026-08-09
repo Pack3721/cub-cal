@@ -50,6 +50,28 @@ html, body {
   flex: 1;
 }
 
+.den-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.35rem;
+}
+
+.den-row .label {
+  margin-bottom: 0;
+}
+
+.den-num-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.den-num {
+  width: 4rem;
+}
+
 .checkbox-label {
   display: flex;
   align-items: center;
