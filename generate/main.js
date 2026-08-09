@@ -86,7 +86,7 @@ window.addEventListener('DOMContentLoaded', function () {
     height: 220,
     type: 'svg',
     data: 'placeholder',
-    image: window.CAL_ICON_URL,
+    image: 'https://api.iconify.design/mdi:calendar-sync.svg?color=%23003F87',
     imageOptions: {
       margin: 4,
       imageSize: 0.38,
