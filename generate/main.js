@@ -81,29 +81,12 @@ window.addEventListener('DOMContentLoaded', function () {
     },
   });
 
-  var calendarSvg = [
-    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">',
-    '<rect width="64" height="64" rx="10" fill="white"/>',
-    '<rect x="8" y="15" width="48" height="41" rx="6" fill="#003F87"/>',
-    '<rect x="8" y="15" width="48" height="17" rx="6" fill="#FFC72C"/>',
-    '<rect x="8" y="25" width="48" height="7" fill="#FFC72C"/>',
-    '<rect x="18" y="7" width="6" height="15" rx="3" fill="#003F87"/>',
-    '<rect x="40" y="7" width="6" height="15" rx="3" fill="#003F87"/>',
-    '<rect x="13" y="37" width="9" height="7" rx="2" fill="white"/>',
-    '<rect x="27" y="37" width="9" height="7" rx="2" fill="white"/>',
-    '<rect x="41" y="37" width="9" height="7" rx="2" fill="white"/>',
-    '<rect x="13" y="48" width="9" height="7" rx="2" fill="white"/>',
-    '<rect x="27" y="48" width="9" height="7" rx="2" fill="white"/>',
-    '</svg>',
-  ].join('');
-  var calendarIcon = 'data:image/svg+xml;base64,' + btoa(calendarSvg);
-
   var qrCode = new QRCodeStyling({
     width: 220,
     height: 220,
     type: 'svg',
     data: 'placeholder',
-    image: calendarIcon,
+    image: window.CAL_ICON_URL,
     imageOptions: {
       margin: 4,
       imageSize: 0.38,
