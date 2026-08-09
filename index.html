@@ -1,0 +1,92 @@
+---
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scout Calendar Subscriptions</title>
+  <style>html, body { background: #ffffff; margin: 0; }</style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <link rel="stylesheet" href="{{ '/styles.css' | relative_url }}?v={{ site.github.build_revision }}">
+</head>
+<body>
+
+<header class="scout-header">
+  <span class="fleur">⚜</span>
+  <h1 id="header-title">Scout Calendar</h1>
+</header>
+
+<script id="main-template" type="text/ractive">
+  {{#if hasParams}}
+    <section class="section pb-3">
+      <div class="container">
+        <div class="mb-4 rank-badge">
+          {{#if rankLabel}}
+            <p class="title is-4 mb-1">
+              {{rankLabel}} Den
+              <span class="tag is-light ml-2">{{gradeLabel}}</span>
+            </p>
+          {{/if}}
+          <p class="subtitle is-6 mt-1 mb-0">Choose your calendar app, then tap a button to subscribe.</p>
+        </div>
+
+        <div class="buttons has-addons app-selector mb-5">
+          <button class="button {{app === 'apple' ? 'is-info is-selected' : ''}}" on-click="@this.set('app', 'apple')">
+            Apple Calendar
+          </button>
+          <button class="button {{app === 'google' ? 'is-info is-selected' : ''}}" on-click="@this.set('app', 'google')">
+            Google Calendar
+          </button>
+          <button class="button {{app === 'outlook' ? 'is-info is-selected' : ''}}" on-click="@this.set('app', 'outlook')">
+            Outlook
+          </button>
+        </div>
+
+        <div class="buttons is-flex-direction-column">
+          {{#if packUrl}}
+            <a class="button is-primary is-fullwidth cal-btn" href="{{packCalLink}}" {{openTarget}}>
+              <span>
+                <span class="cal-btn-title">Add Pack Calendar</span>
+                <span class="cal-btn-sub">All pack events and activities</span>
+              </span>
+            </a>
+          {{/if}}
+          {{#if denUrl}}
+            <a class="button is-info is-fullwidth cal-btn" href="{{denCalLink}}" {{openTarget}}>
+              <span>
+                <span class="cal-btn-title">Add {{rankLabel || 'Den'}} Den Calendar</span>
+                <span class="cal-btn-sub">Den-specific meetings and events</span>
+              </span>
+            </a>
+          {{/if}}
+        </div>
+
+        {{#if appNote}}
+          <p class="help has-text-grey mt-2">{{appNote}}</p>
+        {{/if}}
+      </div>
+    </section>
+  {{else}}
+    <section class="section">
+      <div class="container">
+        <div class="no-params-box">
+          <span class="fleur-lg">⚜</span>
+          <p class="title is-5">No calendar configured</p>
+          <p class="subtitle is-6">Ask your den leader for a subscription link or QR code.</p>
+        </div>
+      </div>
+    </section>
+  {{/if}}
+</script>
+
+<div id="app"></div>
+
+<footer class="footer">
+  <p>Calendar subscriptions powered by <a href="https://scoutbook.scouting.org" target="_blank">Scoutbook</a></p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/ractive@1.4.4/ractive.min.js"></script>
+<script src="{{ '/main.js' | relative_url }}?v={{ site.github.build_revision }}"></script>
+</body>
+</html>

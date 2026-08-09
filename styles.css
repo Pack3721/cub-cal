@@ -1,0 +1,100 @@
+html, body {
+  background: #ffffff;
+  margin: 0;
+}
+
+.scout-header {
+  background: #003F87;
+  color: #ffffff;
+  padding: 1rem 1.5rem;
+}
+
+.scout-header .fleur {
+  font-size: 1.6rem;
+  margin-right: 0.5rem;
+  color: #FFC72C;
+}
+
+.scout-header h1 {
+  display: inline;
+  font-size: 1.4rem;
+  font-weight: 700;
+  vertical-align: middle;
+  color: #ffffff;
+}
+
+.rank-badge .tag {
+  font-size: 0.85rem;
+  vertical-align: middle;
+}
+
+.cal-btn {
+  height: auto;
+  white-space: normal;
+  padding: 0.85rem 1.25rem;
+}
+
+.cal-btn .cal-btn-title {
+  font-size: 1rem;
+  font-weight: 600;
+  display: block;
+}
+
+.cal-btn .cal-btn-sub {
+  font-size: 0.8rem;
+  opacity: 0.85;
+  display: block;
+}
+
+.app-selector .button {
+  flex: 1;
+}
+
+.no-params-box {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #666;
+}
+
+.no-params-box .fleur-lg {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 1rem;
+  color: #FFC72C;
+}
+
+.generator-output {
+  background: #f5f5f5;
+  border-radius: 6px;
+  padding: 1.25rem;
+}
+
+.url-display {
+  word-break: break-all;
+  font-size: 0.8rem;
+  font-family: monospace;
+  background: #fff;
+  border: 1px solid #dbdbdb;
+  border-radius: 4px;
+  padding: 0.5rem 0.75rem;
+}
+
+.qr-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.qr-wrap img {
+  border: 1px solid #eee;
+  border-radius: 4px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+footer.footer {
+  padding: 1.5rem;
+  background: #fafafa;
+  text-align: center;
+  font-size: 0.85rem;
+  color: #888;
+}

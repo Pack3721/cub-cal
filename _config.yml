@@ -1,0 +1,15 @@
+# Update baseurl to match your GitHub Pages repo path (e.g. /your-repo-name)
+baseurl: "/scout-cal"
+# Update url to match your GitHub Pages domain (e.g. https://yourpack.github.io)
+url: "https://pack3721.github.io"
+
+title: Scout Calendar Subscriptions
+description: Easy calendar subscription links for Cub Scout packs and dens
+
+plugins: []
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - README.md
+  - .gitignore

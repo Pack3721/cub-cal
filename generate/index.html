@@ -1,0 +1,98 @@
+---
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calendar Link Generator</title>
+  <style>html, body { background: #ffffff; margin: 0; }</style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <link rel="stylesheet" href="{{ '/styles.css' | relative_url }}?v={{ site.github.build_revision }}">
+</head>
+<body>
+
+<header class="scout-header">
+  <span class="fleur">⚜</span>
+  <h1>Calendar Link Generator</h1>
+</header>
+
+<script id="generator-template" type="text/ractive">
+  <section class="section">
+    <div class="container" style="max-width: 560px;">
+
+      <div class="box">
+        <h2 class="title is-5 mb-4">Configure Subscription Link</h2>
+
+        <div class="field">
+          <label class="label">Pack Name</label>
+          <div class="control">
+            <input class="input" type="text" placeholder="e.g. Pack 3721"
+              value="{{packName}}" on-input="@this.set('packName', @node.value)">
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">Pack Calendar URL</label>
+          <div class="control">
+            <input class="input" type="url"
+              placeholder="https://api.scouting.org/advancements/events/calendar/XXXXX"
+              value="{{packUrl}}" on-input="@this.set('packUrl', @node.value)">
+          </div>
+          <p class="help">The ICS/calendar URL from Scoutbook for the whole pack</p>
+        </div>
+
+        <div class="field">
+          <label class="label">Rank / Den</label>
+          <div class="control">
+            <div class="select is-fullwidth">
+              <select value="{{rank}}" on-change="@this.set('rank', @node.value)">
+                <option value="">— Select a rank —</option>
+                {{#each ranks}}
+                  <option value="{{slug}}">{{label}} — {{grade}}</option>
+                {{/each}}
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">Den Calendar URL <span class="has-text-grey-light">(optional)</span></label>
+          <div class="control">
+            <input class="input" type="url"
+              placeholder="https://api.scouting.org/advancements/events/calendar/XXXXX/YYYYY"
+              value="{{denUrl}}" on-input="@this.set('denUrl', @node.value)">
+          </div>
+          <p class="help">The ICS/calendar URL from Scoutbook for this specific den</p>
+        </div>
+      </div>
+
+      {{#if hasOutput}}
+        <div class="generator-output mt-4">
+          <p class="label mb-2">Generated Link</p>
+          <div class="url-display mb-3">{{generatedUrl}}</div>
+          <button class="button is-small is-light" id="copy-btn" on-click="copyUrl()">
+            Copy Link
+          </button>
+
+          <div class="qr-wrap mt-4">
+            <img src="{{qrUrl}}" width="200" height="200" alt="QR code for subscription link">
+          </div>
+          <p class="help has-text-centered mt-2">Scan or share this QR code with den families</p>
+        </div>
+      {{/if}}
+
+    </div>
+  </section>
+</script>
+
+<div id="app"></div>
+
+<footer class="footer">
+  <p>Calendar subscriptions powered by <a href="https://scoutbook.scouting.org" target="_blank">Scoutbook</a></p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/ractive@1.4.4/ractive.min.js"></script>
+<script src="{{ '/generate/main.js' | relative_url }}?v={{ site.github.build_revision }}"></script>
+</body>
+</html>
