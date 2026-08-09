@@ -20,38 +20,53 @@ function buildMainUrl(packName, rank, packUrl, denUrl) {
 }
 
 window.addEventListener('DOMContentLoaded', function () {
+  const denUrls = {};
+  RANKS.forEach(function (r) { denUrls[r.slug] = ''; });
+
   const ractive = new Ractive({
     target: '#app',
     template: '#generator-template',
     data: {
       packName: '',
-      rank: '',
       packUrl: '',
-      denUrl: '',
+      denUrls: denUrls,
+      selectedRank: '',
       ranks: RANKS,
     },
     computed: {
+      selectedRankInfo: function () {
+        const slug = this.get('selectedRank');
+        return RANKS.find(function (r) { return r.slug === slug; }) || null;
+      },
+      rankLabel: function () {
+        const ri = this.get('selectedRankInfo');
+        return ri ? ri.label : '';
+      },
+      selectedDenUrl: function () {
+        const slug = this.get('selectedRank');
+        return slug ? (this.get('denUrls.' + slug) || '') : '';
+      },
       hasOutput: function () {
-        return !!(this.get('packUrl') || this.get('denUrl'));
+        const slug = this.get('selectedRank');
+        return !!slug && !!(this.get('packUrl') || this.get('selectedDenUrl'));
       },
       generatedUrl: function () {
         return buildMainUrl(
           this.get('packName'),
-          this.get('rank'),
+          this.get('selectedRank'),
           this.get('packUrl'),
-          this.get('denUrl')
+          this.get('selectedDenUrl')
         );
       },
       qrUrl: function () {
-        const url = this.get('generatedUrl');
         return 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=4&data=' +
-          encodeURIComponent(url);
+          encodeURIComponent(this.get('generatedUrl'));
       },
     },
     copyUrl: function () {
       const url = this.get('generatedUrl');
+      const btn = document.getElementById('copy-btn');
       navigator.clipboard.writeText(url).then(function () {
-        const btn = document.getElementById('copy-btn');
         if (btn) {
           const orig = btn.textContent;
           btn.textContent = 'Copied!';

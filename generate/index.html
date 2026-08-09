@@ -5,7 +5,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Calendar Link Generator</title>
+  <title>Generate Subscription Link</title>
   <style>html, body { background: #ffffff; margin: 0; }</style>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
   <link rel="stylesheet" href="{{ '/styles.css' | relative_url }}?v={{ site.github.build_revision }}">
@@ -14,40 +14,60 @@
 
 <header class="scout-header">
   <span class="fleur">⚜</span>
-  <h1>Calendar Link Generator</h1>
+  <h1>Generate Subscription Link</h1>
 </header>
 
 <script id="generator-template" type="text/ractive">
-  <section class="section">
-    <div class="container" style="max-width: 560px;">
+  <section class="section pb-2">
+    <div class="container" style="max-width: 600px;">
 
       <div class="box">
-        <h2 class="title is-5 mb-4">Configure Subscription Link</h2>
+        <h2 class="title is-6 mb-3">Pack Info</h2>
 
         <div class="field">
-          <label class="label">Pack Name</label>
+          <label class="label is-small">Pack Name</label>
           <div class="control">
-            <input class="input" type="text" placeholder="e.g. Pack 3721"
+            <input class="input is-small" type="text" placeholder="e.g. Pack 3721"
               value="{{packName}}" on-input="@this.set('packName', @node.value)">
           </div>
         </div>
 
         <div class="field">
-          <label class="label">Pack Calendar URL</label>
+          <label class="label is-small">Pack Calendar URL</label>
           <div class="control">
-            <input class="input" type="url"
+            <input class="input is-small" type="url"
               placeholder="https://api.scouting.org/advancements/events/calendar/XXXXX"
               value="{{packUrl}}" on-input="@this.set('packUrl', @node.value)">
           </div>
-          <p class="help">The ICS/calendar URL from Scoutbook for the whole pack</p>
         </div>
+      </div>
+
+      <div class="box">
+        <h2 class="title is-6 mb-3">Den Calendar URLs</h2>
+        <p class="help mb-4">Leave blank for any dens that don't have a calendar yet.</p>
+
+        {{#each ranks}}
+          <div class="field">
+            <label class="label is-small">{{label}} <span class="has-text-grey-light">— {{grade}}</span></label>
+            <div class="control">
+              <input class="input is-small" type="url"
+                placeholder="https://api.scouting.org/advancements/events/calendar/XXXXX/YYYYY"
+                value="{{~/denUrls[slug]}}"
+                on-input="@this.set('denUrls.' + slug, @node.value)">
+            </div>
+          </div>
+        {{/each}}
+      </div>
+
+      <div class="box">
+        <h2 class="title is-6 mb-3">Generate Link</h2>
 
         <div class="field">
-          <label class="label">Rank / Den</label>
+          <label class="label is-small">Select Rank</label>
           <div class="control">
-            <div class="select is-fullwidth">
-              <select value="{{rank}}" on-change="@this.set('rank', @node.value)">
-                <option value="">— Select a rank —</option>
+            <div class="select is-fullwidth is-small">
+              <select value="{{selectedRank}}" on-change="@this.set('selectedRank', @node.value)">
+                <option value="">— Choose a rank —</option>
                 {{#each ranks}}
                   <option value="{{slug}}">{{label}} — {{grade}}</option>
                 {{/each}}
@@ -56,32 +76,24 @@
           </div>
         </div>
 
-        <div class="field">
-          <label class="label">Den Calendar URL <span class="has-text-grey-light">(optional)</span></label>
-          <div class="control">
-            <input class="input" type="url"
-              placeholder="https://api.scouting.org/advancements/events/calendar/XXXXX/YYYYY"
-              value="{{denUrl}}" on-input="@this.set('denUrl', @node.value)">
+        {{#if hasOutput}}
+          <div class="generator-output mt-4">
+            <p class="label is-small mb-2">Subscription Link</p>
+            <div class="url-display mb-3">{{generatedUrl}}</div>
+            <button class="button is-small is-light" id="copy-btn" on-click="copyUrl()">
+              Copy Link
+            </button>
+
+            <div class="qr-wrap mt-4">
+              <img src="{{qrUrl}}" width="200" height="200" alt="QR code for subscription link">
+            </div>
+            <p class="help has-text-centered mt-2">Share or print this QR code for {{rankLabel}} families</p>
           </div>
-          <p class="help">The ICS/calendar URL from Scoutbook for this specific den</p>
-        </div>
+        {{else}}
+          <p class="help has-text-grey">Enter at least one calendar URL and select a rank to generate a link.</p>
+        {{/if}}
+
       </div>
-
-      {{#if hasOutput}}
-        <div class="generator-output mt-4">
-          <p class="label mb-2">Generated Link</p>
-          <div class="url-display mb-3">{{generatedUrl}}</div>
-          <button class="button is-small is-light" id="copy-btn" on-click="copyUrl()">
-            Copy Link
-          </button>
-
-          <div class="qr-wrap mt-4">
-            <img src="{{qrUrl}}" width="200" height="200" alt="QR code for subscription link">
-          </div>
-          <p class="help has-text-centered mt-2">Scan or share this QR code with den families</p>
-        </div>
-      {{/if}}
-
     </div>
   </section>
 </script>
