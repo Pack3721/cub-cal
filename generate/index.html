@@ -20,15 +20,20 @@
 <script id="generator-template" type="text/ractive">
 {% raw %}
   <section class="section pb-2">
-    <div class="container" style="max-width: 560px;">
+    <div class="container" style="max-width: 600px;">
 
       <div class="box">
         <h2 class="title is-6 mb-3">Pack</h2>
         <div class="field">
-          <label class="label is-small">Pack Scoutbook ID <span class="has-text-grey-light">(from the calendar URL, not your pack number)</span></label>
+          <label class="label is-small">Pack Calendar URL</label>
           <div class="control">
-            <input class="input is-small" type="number" placeholder="e.g. 12390" value="{{packNumber}}">
+            <input class="input is-small {{validation.pack.cls}}" type="text"
+              placeholder="https://api.scouting.org/advancements/events/calendar/XXXXX"
+              value="{{packUrl}}">
           </div>
+          {{#if validation.pack.cls === 'is-danger'}}
+            <p class="help is-danger">Expected: https://api.scouting.org/advancements/events/calendar/{number}</p>
+          {{/if}}
         </div>
         <div class="field mb-0">
           <label class="label is-small">Pack Name</label>
@@ -39,43 +44,67 @@
       </div>
 
       <div class="box">
-        <h2 class="title is-6 mb-1">Den Numbers</h2>
-        <p class="help mb-4">Enter the last number from each den's Scoutbook calendar URL. Leave blank if no calendar yet.</p>
+        <h2 class="title is-6 mb-1">Den Calendar URLs</h2>
+        <p class="help mb-4">Paste each den's Scoutbook calendar URL. Leave blank if no calendar yet.</p>
+
         <div class="field">
           <label class="label is-small">Lion <span class="has-text-grey-light">— Kindergarten</span></label>
           <div class="control">
-            <input class="input is-small" type="number" placeholder="Den number" value="{{lionNum}}">
+            <input class="input is-small {{validation.lion.cls}}" type="text"
+              placeholder="https://api.scouting.org/advancements/events/calendar/XXXXX/YYYYY"
+              value="{{lionUrl}}">
           </div>
+          {{#if validation.lion.mismatch}}<p class="help is-danger">Pack ID doesn't match pack URL.</p>{{/if}}
         </div>
+
         <div class="field">
           <label class="label is-small">Tiger <span class="has-text-grey-light">— 1st Grade</span></label>
           <div class="control">
-            <input class="input is-small" type="number" placeholder="Den number" value="{{tigerNum}}">
+            <input class="input is-small {{validation.tiger.cls}}" type="text"
+              placeholder="https://api.scouting.org/advancements/events/calendar/XXXXX/YYYYY"
+              value="{{tigerUrl}}">
           </div>
+          {{#if validation.tiger.mismatch}}<p class="help is-danger">Pack ID doesn't match pack URL.</p>{{/if}}
         </div>
+
         <div class="field">
           <label class="label is-small">Wolf <span class="has-text-grey-light">— 2nd Grade</span></label>
           <div class="control">
-            <input class="input is-small" type="number" placeholder="Den number" value="{{wolfNum}}">
+            <input class="input is-small {{validation.wolf.cls}}" type="text"
+              placeholder="https://api.scouting.org/advancements/events/calendar/XXXXX/YYYYY"
+              value="{{wolfUrl}}">
           </div>
+          {{#if validation.wolf.mismatch}}<p class="help is-danger">Pack ID doesn't match pack URL.</p>{{/if}}
         </div>
+
         <div class="field">
           <label class="label is-small">Bear <span class="has-text-grey-light">— 3rd Grade</span></label>
           <div class="control">
-            <input class="input is-small" type="number" placeholder="Den number" value="{{bearNum}}">
+            <input class="input is-small {{validation.bear.cls}}" type="text"
+              placeholder="https://api.scouting.org/advancements/events/calendar/XXXXX/YYYYY"
+              value="{{bearUrl}}">
           </div>
+          {{#if validation.bear.mismatch}}<p class="help is-danger">Pack ID doesn't match pack URL.</p>{{/if}}
         </div>
+
         <div class="field">
           <label class="label is-small">Webelos <span class="has-text-grey-light">— 4th Grade</span></label>
           <div class="control">
-            <input class="input is-small" type="number" placeholder="Den number" value="{{webelosNum}}">
+            <input class="input is-small {{validation.webelos.cls}}" type="text"
+              placeholder="https://api.scouting.org/advancements/events/calendar/XXXXX/YYYYY"
+              value="{{webelosUrl}}">
           </div>
+          {{#if validation.webelos.mismatch}}<p class="help is-danger">Pack ID doesn't match pack URL.</p>{{/if}}
         </div>
+
         <div class="field mb-0">
           <label class="label is-small">Arrow of Light <span class="has-text-grey-light">— 5th Grade</span></label>
           <div class="control">
-            <input class="input is-small" type="number" placeholder="Den number" value="{{aolNum}}">
+            <input class="input is-small {{validation.aol.cls}}" type="text"
+              placeholder="https://api.scouting.org/advancements/events/calendar/XXXXX/YYYYY"
+              value="{{aolUrl}}">
           </div>
+          {{#if validation.aol.mismatch}}<p class="help is-danger">Pack ID doesn't match pack URL.</p>{{/if}}
         </div>
       </div>
 
@@ -89,7 +118,7 @@
           </div>
           <p class="help has-text-centered mt-2">Share or print this QR code — families pick their own rank(s)</p>
         {{else}}
-          <p class="has-text-grey is-size-6">Enter a pack number above to generate a link.</p>
+          <p class="has-text-grey is-size-6">Paste the pack calendar URL above to generate a link.</p>
         {{/if}}
       </div>
 
