@@ -1,62 +1,48 @@
-const RANKS = [
-  { slug: 'lion',    label: 'Lion',           grade: 'Kindergarten' },
-  { slug: 'tiger',   label: 'Tiger',          grade: '1st Grade'    },
-  { slug: 'wolf',    label: 'Wolf',           grade: '2nd Grade'    },
-  { slug: 'bear',    label: 'Bear',           grade: '3rd Grade'    },
-  { slug: 'webelos', label: 'Webelos',        grade: '4th Grade'    },
-  { slug: 'aol',     label: 'Arrow of Light', grade: '5th Grade'    },
-];
-
-function buildMainUrl(packName, rank, packUrl, denUrl) {
+function buildMainUrl(data) {
   const base = window.location.origin +
     window.location.pathname.replace(/\/generate\/?.*$/, '/');
   const params = new URLSearchParams();
-  if (packName) params.set('packName', packName);
-  if (rank)     params.set('rank', rank);
-  if (packUrl)  params.set('pack', packUrl);
-  if (denUrl)   params.set('den', denUrl);
-  const qs = params.toString();
-  return base + (qs ? '?' + qs : '');
+  if (data.packName)   params.set('packName', data.packName);
+  if (data.packUrl)    params.set('pack',     data.packUrl);
+  if (data.lionUrl)    params.set('lion',     data.lionUrl);
+  if (data.tigerUrl)   params.set('tiger',    data.tigerUrl);
+  if (data.wolfUrl)    params.set('wolf',     data.wolfUrl);
+  if (data.bearUrl)    params.set('bear',     data.bearUrl);
+  if (data.webelosUrl) params.set('webelos',  data.webelosUrl);
+  if (data.aolUrl)     params.set('aol',      data.aolUrl);
+  return base + '?' + params.toString();
 }
 
 window.addEventListener('DOMContentLoaded', function () {
-  const denUrls = {};
-  RANKS.forEach(function (r) { denUrls[r.slug] = ''; });
-
-  const ractive = new Ractive({
+  var ractive = new Ractive({
     target: '#app',
     template: '#generator-template',
     data: {
-      packName: '',
-      packUrl: '',
-      denUrls: denUrls,
-      selectedRank: '',
-      ranks: RANKS,
+      packName:   '',
+      packUrl:    '',
+      lionUrl:    '',
+      tigerUrl:   '',
+      wolfUrl:    '',
+      bearUrl:    '',
+      webelosUrl: '',
+      aolUrl:     '',
     },
     computed: {
-      selectedRankInfo: function () {
-        const slug = this.get('selectedRank');
-        return RANKS.find(function (r) { return r.slug === slug; }) || null;
-      },
-      rankLabel: function () {
-        const ri = this.get('selectedRankInfo');
-        return ri ? ri.label : '';
-      },
-      selectedDenUrl: function () {
-        const slug = this.get('selectedRank');
-        return slug ? (this.get('denUrls.' + slug) || '') : '';
-      },
       hasOutput: function () {
-        const slug = this.get('selectedRank');
-        return !!slug && !!(this.get('packUrl') || this.get('selectedDenUrl'));
+        return !!(this.get('packUrl') || this.get('lionUrl') || this.get('tigerUrl') ||
+          this.get('wolfUrl') || this.get('bearUrl') || this.get('webelosUrl') || this.get('aolUrl'));
       },
       generatedUrl: function () {
-        return buildMainUrl(
-          this.get('packName'),
-          this.get('selectedRank'),
-          this.get('packUrl'),
-          this.get('selectedDenUrl')
-        );
+        return buildMainUrl({
+          packName:   this.get('packName'),
+          packUrl:    this.get('packUrl'),
+          lionUrl:    this.get('lionUrl'),
+          tigerUrl:   this.get('tigerUrl'),
+          wolfUrl:    this.get('wolfUrl'),
+          bearUrl:    this.get('bearUrl'),
+          webelosUrl: this.get('webelosUrl'),
+          aolUrl:     this.get('aolUrl'),
+        });
       },
       qrUrl: function () {
         return 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=4&data=' +
@@ -64,11 +50,11 @@ window.addEventListener('DOMContentLoaded', function () {
       },
     },
     copyUrl: function () {
-      const url = this.get('generatedUrl');
-      const btn = document.getElementById('copy-btn');
+      var url = this.get('generatedUrl');
+      var btn = document.getElementById('copy-btn');
       navigator.clipboard.writeText(url).then(function () {
         if (btn) {
-          const orig = btn.textContent;
+          var orig = btn.textContent;
           btn.textContent = 'Copied!';
           setTimeout(function () { btn.textContent = orig; }, 1500);
         }

@@ -23,77 +23,88 @@
 
       <div class="box">
         <h2 class="title is-6 mb-3">Pack Info</h2>
-
         <div class="field">
           <label class="label is-small">Pack Name</label>
           <div class="control">
-            <input class="input is-small" type="text" placeholder="e.g. Pack 3721"
-              value="{{packName}}" on-input="@this.set('packName', @node.value)">
+            <input class="input is-small" type="text" placeholder="e.g. Pack 3721" value="{{packName}}">
           </div>
         </div>
-
         <div class="field">
           <label class="label is-small">Pack Calendar URL</label>
           <div class="control">
             <input class="input is-small" type="url"
               placeholder="https://api.scouting.org/advancements/events/calendar/XXXXX"
-              value="{{packUrl}}" on-input="@this.set('packUrl', @node.value)">
+              value="{{packUrl}}">
           </div>
         </div>
       </div>
 
       <div class="box">
-        <h2 class="title is-6 mb-3">Den Calendar URLs</h2>
+        <h2 class="title is-6 mb-1">Den Calendar URLs</h2>
         <p class="help mb-4">Leave blank for any dens that don't have a calendar yet.</p>
 
-        {{#each ranks}}
-          <div class="field">
-            <label class="label is-small">{{label}} <span class="has-text-grey-light">— {{grade}}</span></label>
-            <div class="control">
-              <input class="input is-small" type="url"
-                placeholder="https://api.scouting.org/advancements/events/calendar/XXXXX/YYYYY"
-                value="{{~/denUrls[slug]}}"
-                on-input="@this.set('denUrls.' + slug, @node.value)">
-            </div>
-          </div>
-        {{/each}}
-      </div>
-
-      <div class="box">
-        <h2 class="title is-6 mb-3">Generate Link</h2>
-
         <div class="field">
-          <label class="label is-small">Select Rank</label>
+          <label class="label is-small">Lion <span class="has-text-grey-light">— Kindergarten</span></label>
           <div class="control">
-            <div class="select is-fullwidth is-small">
-              <select value="{{selectedRank}}" on-change="@this.set('selectedRank', @node.value)">
-                <option value="">— Choose a rank —</option>
-                {{#each ranks}}
-                  <option value="{{slug}}">{{label}} — {{grade}}</option>
-                {{/each}}
-              </select>
-            </div>
+            <input class="input is-small" type="url"
+              placeholder="https://api.scouting.org/advancements/events/calendar/XXXXX/YYYYY"
+              value="{{lionUrl}}">
           </div>
         </div>
-
-        {{#if hasOutput}}
-          <div class="generator-output mt-4">
-            <p class="label is-small mb-2">Subscription Link</p>
-            <div class="url-display mb-3">{{generatedUrl}}</div>
-            <button class="button is-small is-light" id="copy-btn" on-click="copyUrl()">
-              Copy Link
-            </button>
-
-            <div class="qr-wrap mt-4">
-              <img src="{{qrUrl}}" width="200" height="200" alt="QR code for subscription link">
-            </div>
-            <p class="help has-text-centered mt-2">Share or print this QR code for {{rankLabel}} families</p>
+        <div class="field">
+          <label class="label is-small">Tiger <span class="has-text-grey-light">— 1st Grade</span></label>
+          <div class="control">
+            <input class="input is-small" type="url"
+              placeholder="https://api.scouting.org/advancements/events/calendar/XXXXX/YYYYY"
+              value="{{tigerUrl}}">
           </div>
-        {{else}}
-          <p class="help has-text-grey">Enter at least one calendar URL and select a rank to generate a link.</p>
-        {{/if}}
-
+        </div>
+        <div class="field">
+          <label class="label is-small">Wolf <span class="has-text-grey-light">— 2nd Grade</span></label>
+          <div class="control">
+            <input class="input is-small" type="url"
+              placeholder="https://api.scouting.org/advancements/events/calendar/XXXXX/YYYYY"
+              value="{{wolfUrl}}">
+          </div>
+        </div>
+        <div class="field">
+          <label class="label is-small">Bear <span class="has-text-grey-light">— 3rd Grade</span></label>
+          <div class="control">
+            <input class="input is-small" type="url"
+              placeholder="https://api.scouting.org/advancements/events/calendar/XXXXX/YYYYY"
+              value="{{bearUrl}}">
+          </div>
+        </div>
+        <div class="field">
+          <label class="label is-small">Webelos <span class="has-text-grey-light">— 4th Grade</span></label>
+          <div class="control">
+            <input class="input is-small" type="url"
+              placeholder="https://api.scouting.org/advancements/events/calendar/XXXXX/YYYYY"
+              value="{{webelosUrl}}">
+          </div>
+        </div>
+        <div class="field">
+          <label class="label is-small">Arrow of Light <span class="has-text-grey-light">— 5th Grade</span></label>
+          <div class="control">
+            <input class="input is-small" type="url"
+              placeholder="https://api.scouting.org/advancements/events/calendar/XXXXX/YYYYY"
+              value="{{aolUrl}}">
+          </div>
+        </div>
       </div>
+
+      {{#if hasOutput}}
+        <div class="box">
+          <h2 class="title is-6 mb-3">Your Link</h2>
+          <div class="url-display mb-3">{{generatedUrl}}</div>
+          <button class="button is-small is-light" id="copy-btn" on-click="copyUrl()">Copy Link</button>
+          <div class="qr-wrap mt-4">
+            <img src="{{qrUrl}}" width="200" height="200" alt="QR code for subscription link">
+          </div>
+          <p class="help has-text-centered mt-2">Share or print this QR code — families pick their own rank</p>
+        </div>
+      {{/if}}
+
     </div>
   </section>
 </script>

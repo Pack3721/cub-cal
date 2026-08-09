@@ -19,52 +19,82 @@
 
 <script id="main-template" type="text/ractive">
   {{#if hasParams}}
-    <section class="section pb-3">
-      <div class="container">
-        <div class="mb-4 rank-badge">
-          {{#if rankLabel}}
-            <p class="title is-4 mb-1">
-              {{rankLabel}} Den
-              <span class="tag is-light ml-2">{{gradeLabel}}</span>
-            </p>
-          {{/if}}
-          <p class="subtitle is-6 mt-1 mb-0">Choose your calendar app, then tap a button to subscribe.</p>
+    <section class="section pb-2">
+      <div class="container" style="max-width: 560px;">
+
+        <div class="box">
+          <p class="label mb-2">1. What rank is your scout?</p>
+          <div class="control">
+            <div class="select is-fullwidth">
+              <select value="{{selectedRank}}">
+                <option value="">— Select a rank —</option>
+                {{#each ranks}}
+                  {{#if hasDen || !slug}}
+                    <option value="{{slug}}">{{label}} — {{grade}}</option>
+                  {{/if}}
+                {{/each}}
+              </select>
+            </div>
+          </div>
         </div>
 
-        <div class="buttons has-addons app-selector mb-5">
-          <button class="button {{app === 'apple' ? 'is-info is-selected' : ''}}" on-click="@this.set('app', 'apple')">
-            Apple Calendar
-          </button>
-          <button class="button {{app === 'google' ? 'is-info is-selected' : ''}}" on-click="@this.set('app', 'google')">
-            Google Calendar
-          </button>
-          <button class="button {{app === 'outlook' ? 'is-info is-selected' : ''}}" on-click="@this.set('app', 'outlook')">
-            Outlook
-          </button>
-        </div>
+        {{#if selectedRank}}
+          <div class="box">
+            <p class="label mb-3">2. Choose your calendar app</p>
+            <div class="buttons has-addons app-selector mb-0">
+              <button class="button {{app === 'apple' ? 'is-info is-selected' : ''}}"
+                on-click="@this.set('app', 'apple')">Apple Calendar</button>
+              <button class="button {{app === 'google' ? 'is-info is-selected' : ''}}"
+                on-click="@this.set('app', 'google')">Google Calendar</button>
+              <button class="button {{app === 'outlook' ? 'is-info is-selected' : ''}}"
+                on-click="@this.set('app', 'outlook')">Outlook</button>
+            </div>
+          </div>
 
-        <div class="buttons is-flex-direction-column">
-          {{#if packUrl}}
-            <a class="button is-primary is-fullwidth cal-btn" href="{{packCalLink}}" {{openTarget}}>
-              <span>
-                <span class="cal-btn-title">Add Pack Calendar</span>
-                <span class="cal-btn-sub">All pack events and activities</span>
-              </span>
-            </a>
-          {{/if}}
-          {{#if denUrl}}
-            <a class="button is-info is-fullwidth cal-btn" href="{{denCalLink}}" {{openTarget}}>
-              <span>
-                <span class="cal-btn-title">Add {{rankLabel || 'Den'}} Den Calendar</span>
-                <span class="cal-btn-sub">Den-specific meetings and events</span>
-              </span>
-            </a>
-          {{/if}}
-        </div>
-
-        {{#if appNote}}
-          <p class="help has-text-grey mt-2">{{appNote}}</p>
+          <div class="box">
+            <p class="label mb-3">3. Subscribe</p>
+            <div class="buttons is-flex-direction-column">
+              {{#if packUrl}}
+                {{#if app === 'apple'}}
+                  <a class="button is-primary is-fullwidth cal-btn" href="{{packCalLink}}">
+                    <span>
+                      <span class="cal-btn-title">Add Pack Calendar</span>
+                      <span class="cal-btn-sub">All pack events and activities</span>
+                    </span>
+                  </a>
+                {{else}}
+                  <a class="button is-primary is-fullwidth cal-btn" href="{{packCalLink}}" target="_blank" rel="noopener">
+                    <span>
+                      <span class="cal-btn-title">Add Pack Calendar</span>
+                      <span class="cal-btn-sub">All pack events and activities</span>
+                    </span>
+                  </a>
+                {{/if}}
+              {{/if}}
+              {{#if denUrl}}
+                {{#if app === 'apple'}}
+                  <a class="button is-info is-fullwidth cal-btn" href="{{denCalLink}}">
+                    <span>
+                      <span class="cal-btn-title">Add {{rankLabel}} Den Calendar</span>
+                      <span class="cal-btn-sub">Den-specific meetings and events</span>
+                    </span>
+                  </a>
+                {{else}}
+                  <a class="button is-info is-fullwidth cal-btn" href="{{denCalLink}}" target="_blank" rel="noopener">
+                    <span>
+                      <span class="cal-btn-title">Add {{rankLabel}} Den Calendar</span>
+                      <span class="cal-btn-sub">Den-specific meetings and events</span>
+                    </span>
+                  </a>
+                {{/if}}
+              {{/if}}
+            </div>
+            {{#if appNote}}
+              <p class="help has-text-grey mt-2">{{appNote}}</p>
+            {{/if}}
+          </div>
         {{/if}}
+
       </div>
     </section>
   {{else}}
