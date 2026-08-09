@@ -1,10 +1,12 @@
+var API_BASE = 'https://api.scouting.org/advancements/events/calendar/';
+
 var RANK_DEFS = [
-  { slug: 'lion',    label: 'Lion',           grade: 'Kindergarten', param: 'lion'    },
-  { slug: 'tiger',   label: 'Tiger',          grade: '1st Grade',    param: 'tiger'   },
-  { slug: 'wolf',    label: 'Wolf',           grade: '2nd Grade',    param: 'wolf'    },
-  { slug: 'bear',    label: 'Bear',           grade: '3rd Grade',    param: 'bear'    },
-  { slug: 'webelos', label: 'Webelos',        grade: '4th Grade',    param: 'webelos' },
-  { slug: 'aol',     label: 'Arrow of Light', grade: '5th Grade',    param: 'aol'     },
+  { slug: 'lion',    label: 'Lion',           grade: 'Kindergarten', key: 'l'  },
+  { slug: 'tiger',   label: 'Tiger',          grade: '1st Grade',    key: 't'  },
+  { slug: 'wolf',    label: 'Wolf',           grade: '2nd Grade',    key: 'w'  },
+  { slug: 'bear',    label: 'Bear',           grade: '3rd Grade',    key: 'b'  },
+  { slug: 'webelos', label: 'Webelos',        grade: '4th Grade',    key: 'we' },
+  { slug: 'aol',     label: 'Arrow of Light', grade: '5th Grade',    key: 'a'  },
 ];
 
 function makeCalLink(app, url) {
@@ -17,20 +19,20 @@ function makeCalLink(app, url) {
 }
 
 window.addEventListener('DOMContentLoaded', function () {
-  var params = new URLSearchParams(window.location.search);
-  var packName = params.get('packName') || '';
-  var packUrl  = params.get('pack')     || '';
+  var params   = new URLSearchParams(window.location.search);
+  var packId   = params.get('p') || '';
+  var packName = params.get('n') || '';
+  var packUrl  = packId ? (API_BASE + packId) : '';
 
-  // Build list of ranks that have a den URL in the link
   var availableRanks = [];
   RANK_DEFS.forEach(function (r) {
-    var denUrl = params.get(r.param) || '';
-    if (denUrl) {
+    var denId = params.get(r.key) || '';
+    if (denId && packId) {
       availableRanks.push({
         slug:     r.slug,
         label:    r.label,
         grade:    r.grade,
-        denUrl:   denUrl,
+        denUrl:   API_BASE + packId + '/' + denId,
         selected: false,
       });
     }
@@ -52,13 +54,14 @@ window.addEventListener('DOMContentLoaded', function () {
         return !!(packUrl || availableRanks.length);
       },
       selectedRanks: function () {
+        var app = this.get('app');
         return this.get('availableRanks')
           .filter(function (r) { return r.selected; })
           .map(function (r) {
             return {
               label:      r.label,
               grade:      r.grade,
-              denCalLink: makeCalLink(ractive.get('app'), r.denUrl),
+              denCalLink: makeCalLink(app, r.denUrl),
             };
           });
       },
