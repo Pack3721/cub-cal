@@ -55,6 +55,7 @@ window.addEventListener('DOMContentLoaded', function () {
       app:            'apple',
       packUrl:        packUrl,
       availableRanks: availableRanks,
+      dropdownOpen:   false,
     },
     computed: {
       hasParams: function () {
@@ -76,6 +77,11 @@ window.addEventListener('DOMContentLoaded', function () {
       packCalLink: function () {
         return makeCalLink(this.get('app'), packUrl);
       },
+      dropdownLabel: function () {
+        var selected = this.get('availableRanks').filter(function (r) { return r.selected; });
+        if (!selected.length) return 'Select den(s)…';
+        return selected.map(function (r) { return r.displayName; }).join(', ');
+      },
       appNote: function () {
         var app = this.get('app');
         if (app === 'apple')   return 'Opens Apple Calendar — confirm the subscription when prompted.';
@@ -84,5 +90,16 @@ window.addEventListener('DOMContentLoaded', function () {
         return '';
       },
     },
+  });
+
+  ractive.on('toggleDropdown', function (ctx) {
+    ctx.original.stopPropagation();
+    ractive.set('dropdownOpen', !ractive.get('dropdownOpen'));
+  });
+
+  document.addEventListener('click', function (e) {
+    if (!e.target.closest('#den-dropdown')) {
+      ractive.set('dropdownOpen', false);
+    }
   });
 });

@@ -25,26 +25,45 @@
 
         {{#if availableRanks.length}}
           <div class="box">
-            <p class="label mb-3">1. Select your scout's rank(s)</p>
-            {{#each availableRanks}}
-              <label class="checkbox-label">
-                <input type="checkbox" checked="{{selected}}">
-                <span class="rank-name">{{displayName}}</span>
-                <span class="has-text-grey rank-grade">— {{grade}}</span>
-              </label>
-            {{/each}}
+            <p class="label mb-3">1. Select your scout's den(s)</p>
+            <div class="dropdown {{dropdownOpen ? 'is-active' : ''}} is-fullwidth" id="den-dropdown">
+              <div class="dropdown-trigger is-fullwidth">
+                <button class="button is-fullwidth den-dropdown-btn" on-click="toggleDropdown">
+                  <span class="den-dropdown-label">{{dropdownLabel}}</span>
+                  <span class="icon is-small ml-auto">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5H7z"/></svg>
+                  </span>
+                </button>
+              </div>
+              <div class="dropdown-menu is-fullwidth" role="menu">
+                <div class="dropdown-content">
+                  {{#each availableRanks}}
+                    <label class="dropdown-item den-option {{selected ? 'is-selected-item' : ''}}">
+                      <input type="checkbox" checked="{{selected}}">
+                      <span class="den-option-name">{{displayName}}</span>
+                      <span class="has-text-grey den-option-grade">— {{grade}}</span>
+                    </label>
+                  {{/each}}
+                </div>
+              </div>
+            </div>
           </div>
         {{/if}}
 
         <div class="box">
           <p class="label mb-3">{{availableRanks.length ? '2.' : '1.'}} Choose your calendar app</p>
-          <div class="buttons has-addons app-selector mb-0">
-            <button class="button {{app === 'apple' ? 'is-info is-selected' : ''}}"
-              on-click="@this.set('app', 'apple')">Apple Calendar</button>
-            <button class="button {{app === 'google' ? 'is-info is-selected' : ''}}"
-              on-click="@this.set('app', 'google')">Google Calendar</button>
-            <button class="button {{app === 'outlook' ? 'is-info is-selected' : ''}}"
-              on-click="@this.set('app', 'outlook')">Outlook</button>
+          <div class="tabs is-toggle is-fullwidth mb-0">
+            <ul>
+              <li class="{{app === 'apple' ? 'is-active' : ''}}">
+                <a on-click="@this.set('app', 'apple')">Apple Calendar</a>
+              </li>
+              <li class="{{app === 'google' ? 'is-active' : ''}}">
+                <a on-click="@this.set('app', 'google')">Google Calendar</a>
+              </li>
+              <li class="{{app === 'outlook' ? 'is-active' : ''}}">
+                <a on-click="@this.set('app', 'outlook')">Outlook</a>
+              </li>
+            </ul>
           </div>
         </div>
 
