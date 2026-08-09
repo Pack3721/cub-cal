@@ -78,14 +78,44 @@ window.addEventListener('DOMContentLoaded', function () {
         }, this);
         return buildMainUrl(v.pack.id, this.get('packName'), denIds, denNums);
       },
-      qrUrl: function () {
-        var url = this.get('generatedUrl');
-        if (!url) return '';
-        return 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=4&data=' +
-          encodeURIComponent(url);
-      },
     },
   });
+
+  var qrCode = new QRCodeStyling({
+    width: 220,
+    height: 220,
+    type: 'svg',
+    data: 'placeholder',
+    dotsOptions: {
+      color: '#003F87',
+      type: 'rounded',
+    },
+    backgroundOptions: {
+      color: '#ffffff',
+    },
+    cornersSquareOptions: {
+      type: 'extra-rounded',
+      color: '#FFC72C',
+    },
+    cornersDotOptions: {
+      type: 'dot',
+      color: '#003F87',
+    },
+    qrOptions: {
+      errorCorrectionLevel: 'M',
+    },
+  });
+  qrCode.append(document.getElementById('qr-container'));
+
+  ractive.observe('generatedUrl', function (url) {
+    var container = document.getElementById('qr-container');
+    if (url) {
+      qrCode.update({ data: url });
+      container.style.display = '';
+    } else {
+      container.style.display = 'none';
+    }
+  }, { init: true });
 
   ractive.on('copy', function () {
     var url = ractive.get('generatedUrl');

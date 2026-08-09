@@ -137,12 +137,12 @@
         {{#if hasOutput}}
           <div class="url-display mb-3">{{generatedUrl}}</div>
           <button class="button is-small is-light" id="copy-btn" on-click="copy">Copy Link</button>
-          <div class="qr-wrap mt-4">
-            <img src="{{qrUrl}}" width="200" height="200" alt="QR code for subscription link">
-          </div>
-          <p class="help has-text-centered mt-2">Share or print this QR code — families pick their own rank(s)</p>
         {{else}}
           <p class="has-text-grey is-size-6">Paste the pack calendar URL above to generate a link.</p>
+        {{/if}}
+        <div id="qr-container" class="qr-wrap mt-4"></div>
+        {{#if hasOutput}}
+          <p class="help has-text-centered mt-2">Share or print this QR code — families pick their own rank(s)</p>
         {{/if}}
       </div>
 
@@ -157,6 +157,7 @@
   <p>Calendar subscriptions powered by <a href="https://scoutbook.scouting.org" target="_blank">Scoutbook</a></p>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.9.2/lib/qr-code-styling.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/ractive@1.4.4/ractive.min.js"></script>
 <script src="{{ '/generate/main.js' | relative_url }}?v={{ site.github.build_revision }}"></script>
 </body>
