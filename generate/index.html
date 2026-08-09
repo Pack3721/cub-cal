@@ -29,10 +29,10 @@
             <input class="input is-small" type="text" placeholder="e.g. Pack 3721" value="{{packName}}">
           </div>
         </div>
-        <div class="field">
+        <div class="field mb-0">
           <label class="label is-small">Pack Calendar URL</label>
           <div class="control">
-            <input class="input is-small" type="url"
+            <input class="input is-small" type="text"
               placeholder="https://api.scouting.org/advancements/events/calendar/XXXXX"
               value="{{packUrl}}">
           </div>
@@ -42,11 +42,10 @@
       <div class="box">
         <h2 class="title is-6 mb-1">Den Calendar URLs</h2>
         <p class="help mb-4">Leave blank for any dens that don't have a calendar yet.</p>
-
         <div class="field">
           <label class="label is-small">Lion <span class="has-text-grey-light">— Kindergarten</span></label>
           <div class="control">
-            <input class="input is-small" type="url"
+            <input class="input is-small" type="text"
               placeholder="https://api.scouting.org/advancements/events/calendar/XXXXX/YYYYY"
               value="{{lionUrl}}">
           </div>
@@ -54,7 +53,7 @@
         <div class="field">
           <label class="label is-small">Tiger <span class="has-text-grey-light">— 1st Grade</span></label>
           <div class="control">
-            <input class="input is-small" type="url"
+            <input class="input is-small" type="text"
               placeholder="https://api.scouting.org/advancements/events/calendar/XXXXX/YYYYY"
               value="{{tigerUrl}}">
           </div>
@@ -62,7 +61,7 @@
         <div class="field">
           <label class="label is-small">Wolf <span class="has-text-grey-light">— 2nd Grade</span></label>
           <div class="control">
-            <input class="input is-small" type="url"
+            <input class="input is-small" type="text"
               placeholder="https://api.scouting.org/advancements/events/calendar/XXXXX/YYYYY"
               value="{{wolfUrl}}">
           </div>
@@ -70,7 +69,7 @@
         <div class="field">
           <label class="label is-small">Bear <span class="has-text-grey-light">— 3rd Grade</span></label>
           <div class="control">
-            <input class="input is-small" type="url"
+            <input class="input is-small" type="text"
               placeholder="https://api.scouting.org/advancements/events/calendar/XXXXX/YYYYY"
               value="{{bearUrl}}">
           </div>
@@ -78,15 +77,15 @@
         <div class="field">
           <label class="label is-small">Webelos <span class="has-text-grey-light">— 4th Grade</span></label>
           <div class="control">
-            <input class="input is-small" type="url"
+            <input class="input is-small" type="text"
               placeholder="https://api.scouting.org/advancements/events/calendar/XXXXX/YYYYY"
               value="{{webelosUrl}}">
           </div>
         </div>
-        <div class="field">
+        <div class="field mb-0">
           <label class="label is-small">Arrow of Light <span class="has-text-grey-light">— 5th Grade</span></label>
           <div class="control">
-            <input class="input is-small" type="url"
+            <input class="input is-small" type="text"
               placeholder="https://api.scouting.org/advancements/events/calendar/XXXXX/YYYYY"
               value="{{aolUrl}}">
           </div>
@@ -97,11 +96,11 @@
         <div class="box">
           <h2 class="title is-6 mb-3">Your Link</h2>
           <div class="url-display mb-3">{{generatedUrl}}</div>
-          <button class="button is-small is-light" id="copy-btn" on-click="copyUrl()">Copy Link</button>
+          <button class="button is-small is-light" id="copy-btn" on-click="copy">Copy Link</button>
           <div class="qr-wrap mt-4">
             <img src="{{qrUrl}}" width="200" height="200" alt="QR code for subscription link">
           </div>
-          <p class="help has-text-centered mt-2">Share or print this QR code — families pick their own rank</p>
+          <p class="help has-text-centered mt-2">Share or print this QR code — families pick their own rank(s)</p>
         </div>
       {{/if}}
 

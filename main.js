@@ -1,4 +1,4 @@
-var RANKS = [
+var RANK_DEFS = [
   { slug: 'lion',    label: 'Lion',           grade: 'Kindergarten', param: 'lion'    },
   { slug: 'tiger',   label: 'Tiger',          grade: '1st Grade',    param: 'tiger'   },
   { slug: 'wolf',    label: 'Wolf',           grade: '2nd Grade',    param: 'wolf'    },
@@ -21,48 +21,49 @@ window.addEventListener('DOMContentLoaded', function () {
   var packName = params.get('packName') || '';
   var packUrl  = params.get('pack')     || '';
 
-  var denUrlMap = {};
-  RANKS.forEach(function (r) {
-    denUrlMap[r.slug] = params.get(r.param) || '';
+  // Build list of ranks that have a den URL in the link
+  var availableRanks = [];
+  RANK_DEFS.forEach(function (r) {
+    var denUrl = params.get(r.param) || '';
+    if (denUrl) {
+      availableRanks.push({
+        slug:     r.slug,
+        label:    r.label,
+        grade:    r.grade,
+        denUrl:   denUrl,
+        selected: false,
+      });
+    }
   });
 
   var headerTitle = document.getElementById('header-title');
   if (packName && headerTitle) headerTitle.textContent = packName + ' Calendar';
 
-  var ranksWithAvailability = RANKS.map(function (r) {
-    return { slug: r.slug, label: r.label, grade: r.grade, hasDen: !!denUrlMap[r.slug] };
-  });
-
   var ractive = new Ractive({
     target: '#app',
     template: '#main-template',
     data: {
-      app: 'apple',
-      packUrl: packUrl,
-      selectedRank: '',
-      ranks: ranksWithAvailability,
+      app:            'apple',
+      packUrl:        packUrl,
+      availableRanks: availableRanks,
     },
     computed: {
       hasParams: function () {
-        return !!packUrl || RANKS.some(function (r) { return !!denUrlMap[r.slug]; });
+        return !!(packUrl || availableRanks.length);
       },
-      rankInfo: function () {
-        var slug = this.get('selectedRank');
-        return RANKS.find(function (r) { return r.slug === slug; }) || null;
-      },
-      rankLabel: function () {
-        var ri = this.get('rankInfo');
-        return ri ? ri.label : '';
-      },
-      denUrl: function () {
-        var slug = this.get('selectedRank');
-        return slug ? (denUrlMap[slug] || '') : '';
+      selectedRanks: function () {
+        return this.get('availableRanks')
+          .filter(function (r) { return r.selected; })
+          .map(function (r) {
+            return {
+              label:      r.label,
+              grade:      r.grade,
+              denCalLink: makeCalLink(ractive.get('app'), r.denUrl),
+            };
+          });
       },
       packCalLink: function () {
         return makeCalLink(this.get('app'), packUrl);
-      },
-      denCalLink: function () {
-        return makeCalLink(this.get('app'), this.get('denUrl'));
       },
       appNote: function () {
         var app = this.get('app');

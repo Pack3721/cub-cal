@@ -50,6 +50,28 @@ html, body {
   flex: 1;
 }
 
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0;
+  cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 1.1rem;
+  height: 1.1rem;
+  flex-shrink: 0;
+}
+
+.rank-name {
+  font-weight: 600;
+}
+
+.rank-grade {
+  font-size: 0.9rem;
+}
+
 .no-params-box {
   text-align: center;
   padding: 3rem 1rem;

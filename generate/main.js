@@ -1,7 +1,7 @@
 function buildMainUrl(data) {
-  const base = window.location.origin +
+  var base = window.location.origin +
     window.location.pathname.replace(/\/generate\/?.*$/, '/');
-  const params = new URLSearchParams();
+  var params = new URLSearchParams();
   if (data.packName)   params.set('packName', data.packName);
   if (data.packUrl)    params.set('pack',     data.packUrl);
   if (data.lionUrl)    params.set('lion',     data.lionUrl);
@@ -49,16 +49,17 @@ window.addEventListener('DOMContentLoaded', function () {
           encodeURIComponent(this.get('generatedUrl'));
       },
     },
-    copyUrl: function () {
-      var url = this.get('generatedUrl');
-      var btn = document.getElementById('copy-btn');
-      navigator.clipboard.writeText(url).then(function () {
-        if (btn) {
-          var orig = btn.textContent;
-          btn.textContent = 'Copied!';
-          setTimeout(function () { btn.textContent = orig; }, 1500);
-        }
-      });
-    },
+  });
+
+  ractive.on('copy', function () {
+    var url = ractive.get('generatedUrl');
+    var btn = document.getElementById('copy-btn');
+    navigator.clipboard.writeText(url).then(function () {
+      if (btn) {
+        var orig = btn.textContent;
+        btn.textContent = 'Copied!';
+        setTimeout(function () { btn.textContent = orig; }, 1500);
+      }
+    });
   });
 });
