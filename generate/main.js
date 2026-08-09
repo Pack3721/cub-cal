@@ -106,11 +106,11 @@ window.addEventListener('DOMContentLoaded', function () {
     image: calendarIcon,
     imageOptions: {
       margin: 4,
-      imageSize: 0.28,
+      imageSize: 0.38,
     },
     dotsOptions: {
       color: '#003F87',
-      type: 'rounded',
+      type: 'dots',
     },
     backgroundOptions: {
       color: '#ffffff',
@@ -124,7 +124,7 @@ window.addEventListener('DOMContentLoaded', function () {
       color: '#003F87',
     },
     qrOptions: {
-      errorCorrectionLevel: 'Q',
+      errorCorrectionLevel: 'H',
     },
   });
   qrCode.append(document.getElementById('qr-container'));
