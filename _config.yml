@@ -1,5 +1,5 @@
 # Update baseurl to match your GitHub Pages repo path (e.g. /your-repo-name)
-baseurl: "/scout-cal"
+baseurl: "/cub-cal"
 # Update url to match your GitHub Pages domain (e.g. https://yourpack.github.io)
 url: "https://pack3721.github.io"
 
