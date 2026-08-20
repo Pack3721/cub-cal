@@ -133,7 +133,7 @@ window.addEventListener('DOMContentLoaded', function () {
       shape: 'circle',
       image: 'https://api.iconify.design/hugeicons:calendar-sync.svg?color=%23003F87',
       imageOptions: {
-        margin: 4,
+        margin: 1,
         imageSize: 0.38,
       },
       dotsOptions: {
