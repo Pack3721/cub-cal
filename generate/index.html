@@ -175,7 +175,7 @@
   <div class="has-text-centered mt-2">
     <a href="{{ site.github.repository_url }}" target="_blank" title="View on GitHub"
       style="display: inline-flex; align-items: center;">
-      <img src="https://img.shields.io/badge/github-{{ site.github.repository_name }}-blue?logo=github"
+      <img src="https://img.shields.io/badge/github-{{ site.github.repository_name | replace: '-', '--' }}-blue?logo=github"
         alt="GitHub Repo Badge">
     </a>
     <a href="{{ site.github.repository_url }}/commit/{{ site.github.build_revision }}" target="_blank"
