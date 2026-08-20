@@ -157,6 +157,9 @@
         <div id="qr-container" class="qr-wrap mt-4"></div>
         {{#if hasOutput}}
           <p class="help has-text-centered mt-2">Share or print this QR code — families pick their own rank(s)</p>
+          <div class="has-text-centered mt-2">
+            <button class="button is-small is-light" id="save-png-btn" on-click="savePng">Save PNG</button>
+          </div>
         {{/if}}
       </div>
 
@@ -169,6 +172,19 @@
 
 <footer class="footer">
   <p>Calendar subscriptions powered by <a href="https://advancements.scouting.org/" target="_blank">Scoutbook+</a></p>
+  <div class="has-text-centered mt-2">
+    <a href="{{ site.github.repository_url }}" target="_blank" title="View on GitHub"
+      style="display: inline-flex; align-items: center;">
+      <img src="https://img.shields.io/badge/github-{{ site.github.repository_name }}-blue?logo=github"
+        alt="GitHub Repo Badge">
+    </a>
+    <a href="{{ site.github.repository_url }}/commit/{{ site.github.build_revision }}" target="_blank"
+      title="Build {{ site.github.build_revision | default: 'dev' }}"
+      style="display: inline-flex; align-items: center; margin-left: 0.4em;">
+      <img src="https://img.shields.io/badge/build-{{ site.github.build_revision | default: 'dev' | slice: 0, 7 }}-lightgrey"
+        alt="Build version badge">
+    </a>
+  </div>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/ractive@1.4.4/ractive.min.js"></script>

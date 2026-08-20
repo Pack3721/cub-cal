@@ -1,4 +1,4 @@
-import { QRCodeStyling } from 'https://cdn.jsdelivr.net/npm/@liquid-js/qr-code-styling@5.5.0/lib/qr-code-styling.js';
+import { QRCodeStyling, browserUtils } from 'https://cdn.jsdelivr.net/npm/@liquid-js/qr-code-styling@5.5.0/lib/qr-code-styling.js';
 import BorderPlugin from 'https://cdn.jsdelivr.net/npm/@liquid-js/qr-code-styling@5.5.0/lib/border-plugin.js';
 
 var RANK_DEFS = [
@@ -162,6 +162,7 @@ window.addEventListener('DOMContentLoaded', function () {
   // Rebuild the whole QRCodeStyling instance on every change (rather than
   // calling .update() on a shared instance) so stale plugin/text state from
   // qr-code-styling's async draw pipeline can't accumulate on the SVG.
+  var currentQrCode = null;
   function renderQr() {
     var url = ractive.get('generatedUrl');
     var container = document.getElementById('qr-container');
@@ -170,14 +171,22 @@ window.addEventListener('DOMContentLoaded', function () {
       var options = baseQrOptions();
       options.data = url;
       options.plugins = [buildBorderPlugin(ractive.get('borderTopText'), ractive.get('borderBottomText'))];
-      new QRCodeStyling(options).append(container);
+      currentQrCode = new QRCodeStyling(options);
+      currentQrCode.append(container);
       container.style.display = '';
     } else {
+      currentQrCode = null;
       container.style.display = 'none';
     }
   }
   ractive.observe('generatedUrl borderTopText borderBottomText', renderQr, { init: false });
   renderQr();
+
+  ractive.on('savePng', function () {
+    if (!currentQrCode) return;
+    var name = (ractive.get('packName') || 'pack-calendar').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'pack-calendar';
+    browserUtils.download(currentQrCode, { name: name + '-qr', extension: 'png' }, { width: 1024, height: 1024, margin: 0 });
+  });
 
   ractive.on('copy', function () {
     var url = ractive.get('generatedUrl');
