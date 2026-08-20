@@ -48,41 +48,53 @@
               </div>
             </div>
           </div>
+          {{#if !readyForNextSteps}}
+            <p class="help has-text-grey has-text-centered mt-2">Select at least one den to continue.</p>
+          {{/if}}
         {{/if}}
 
+        {{#if readyForNextSteps}}
         <div class="box">
-          <p class="label mb-3">{{availableRanks.length ? '2.' : '1.'}} Choose your calendar app</p>
-          <div class="tabs is-toggle is-fullwidth mb-0">
+          <p class="label mb-3">{{availableRanks.length ? '2.' : '1.'}} Choose your calendar app & subscribe</p>
+          <div class="tabs is-toggle is-fullwidth mb-0 app-tabs">
             <ul>
               <li class="{{app === 'apple' ? 'is-active' : ''}}">
-                <a on-click="@this.set('app', 'apple')">Apple Calendar</a>
+                <a on-click="@this.set('app', 'apple')">
+                  <span class="icon is-small"><img src="https://api.iconify.design/logos:apple.svg" alt=""></span>
+                  <span>Apple Calendar</span>
+                </a>
               </li>
               <li class="{{app === 'google' ? 'is-active' : ''}}">
-                <a on-click="@this.set('app', 'google')">Google Calendar</a>
+                <a on-click="@this.set('app', 'google')">
+                  <span class="icon is-small"><img src="https://api.iconify.design/logos:google-icon.svg" alt=""></span>
+                  <span>Google Calendar</span>
+                </a>
               </li>
               <li class="{{app === 'outlook' ? 'is-active' : ''}}">
-                <a on-click="@this.set('app', 'outlook')">Outlook</a>
+                <a on-click="@this.set('app', 'outlook')">
+                  <span class="icon is-small"><img src="https://api.iconify.design/vscode-icons:file-type-outlook.svg" alt=""></span>
+                  <span>Outlook</span>
+                </a>
               </li>
             </ul>
           </div>
-        </div>
-
-        <div class="box">
-          <p class="label mb-3">{{availableRanks.length ? '3.' : '2.'}} Subscribe</p>
+          <div class="app-tab-panel">
           <div class="buttons is-flex-direction-column">
             {{#if packUrl}}
               {{#if app === 'apple'}}
                 <a class="button is-primary is-fullwidth cal-btn" href="{{packCalLink}}">
+                  <span class="icon cal-btn-icon"><img src="{{packBtnIconUrl}}" alt=""></span>
                   <span>
                     <span class="cal-btn-title">Add Pack Calendar</span>
-                    <span class="cal-btn-sub">All pack events and activities</span>
+                    <span class="cal-btn-sub">All pack-wide events and activities</span>
                   </span>
                 </a>
               {{else}}
                 <a class="button is-primary is-fullwidth cal-btn" href="{{packCalLink}}" target="_blank" rel="noopener">
+                  <span class="icon cal-btn-icon"><img src="{{packBtnIconUrl}}" alt=""></span>
                   <span>
                     <span class="cal-btn-title">Add Pack Calendar</span>
-                    <span class="cal-btn-sub">All pack events and activities</span>
+                    <span class="cal-btn-sub">All pack-wide events and activities</span>
                   </span>
                 </a>
               {{/if}}
@@ -90,6 +102,7 @@
             {{#each selectedRanks}}
               {{#if ~/app === 'apple'}}
                 <a class="button is-info is-fullwidth cal-btn" href="{{denCalLink}}">
+                  <span class="icon cal-btn-icon"><img src="{{~/denBtnIconUrl}}" alt=""></span>
                   <span>
                     <span class="cal-btn-title">Add {{displayName}} Calendar</span>
                     <span class="cal-btn-sub">{{grade}} den meetings and events</span>
@@ -97,6 +110,7 @@
                 </a>
               {{else}}
                 <a class="button is-info is-fullwidth cal-btn" href="{{denCalLink}}" target="_blank" rel="noopener">
+                  <span class="icon cal-btn-icon"><img src="{{~/denBtnIconUrl}}" alt=""></span>
                   <span>
                     <span class="cal-btn-title">Add {{displayName}} Calendar</span>
                     <span class="cal-btn-sub">{{grade}} den meetings and events</span>
@@ -108,7 +122,9 @@
           {{#if appNote}}
             <p class="help has-text-grey mt-2">{{appNote}}</p>
           {{/if}}
+          </div>
         </div>
+        {{/if}}
 
       </div>
     </section>
@@ -129,7 +145,7 @@
 <div id="app"></div>
 
 <footer class="footer">
-  <p>Calendar subscriptions powered by <a href="https://scoutbook.scouting.org" target="_blank">Scoutbook</a></p>
+  <p>Calendar subscriptions powered by <a href="https://advancements.scouting.org/" target="_blank">Scoutbook+</a></p>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/ractive@1.4.4/ractive.min.js"></script>

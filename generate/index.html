@@ -140,6 +140,20 @@
         {{else}}
           <p class="has-text-grey is-size-6">Paste the pack calendar URL above to generate a link.</p>
         {{/if}}
+        {{#if hasOutput}}
+          <div class="field mt-4">
+            <label class="label is-small">Top Border Text (optional)</label>
+            <div class="control">
+              <input class="input is-small" type="text" maxlength="40" placeholder="e.g. PACK 3721" value="{{borderTopText}}">
+            </div>
+          </div>
+          <div class="field mb-0">
+            <label class="label is-small">Bottom Border Text (optional)</label>
+            <div class="control">
+              <input class="input is-small" type="text" maxlength="40" placeholder="e.g. SCAN TO SUBSCRIBE" value="{{borderBottomText}}">
+            </div>
+          </div>
+        {{/if}}
         <div id="qr-container" class="qr-wrap mt-4"></div>
         {{#if hasOutput}}
           <p class="help has-text-centered mt-2">Share or print this QR code — families pick their own rank(s)</p>
@@ -154,11 +168,10 @@
 <div id="app"></div>
 
 <footer class="footer">
-  <p>Calendar subscriptions powered by <a href="https://scoutbook.scouting.org" target="_blank">Scoutbook</a></p>
+  <p>Calendar subscriptions powered by <a href="https://advancements.scouting.org/" target="_blank">Scoutbook+</a></p>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.9.2/lib/qr-code-styling.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/ractive@1.4.4/ractive.min.js"></script>
-<script src="{{ '/generate/main.js' | relative_url }}?v={{ site.github.build_revision }}"></script>
+<script type="module" src="{{ '/generate/main.js' | relative_url }}?v={{ site.github.build_revision }}"></script>
 </body>
 </html>

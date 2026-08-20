@@ -22,11 +22,45 @@ function denDisplayName(label, denNum) {
   return denNum ? label + ' Den ' + denNum : label + ' Den';
 }
 
+// Apple's mark is monochrome, so it needs a color that fits the button
+// background; Google/Outlook are already full-color and work on either.
+function appIconUrl(app, appleColor) {
+  if (app === 'google')  return 'https://api.iconify.design/logos:google-icon.svg';
+  if (app === 'outlook') return 'https://api.iconify.design/vscode-icons:file-type-outlook.svg';
+  return 'https://api.iconify.design/mdi:apple.svg?color=' + encodeURIComponent(appleColor);
+}
+
+// App choice is remembered globally (not tied to a pack); den selections
+// are remembered per pack, since a device may visit links for multiple packs.
+var APP_STORAGE_KEY = 'scoutCalApp';
+
+function loadSavedApp() {
+  try {
+    var saved = window.localStorage.getItem(APP_STORAGE_KEY);
+    if (saved === 'apple' || saved === 'google' || saved === 'outlook') return saved;
+  } catch (e) { /* ignore unavailable storage */ }
+  return 'apple';
+}
+
+function densStorageKey(packId) {
+  return 'scoutCalDens:' + packId;
+}
+
+function loadSavedDenSlugs(packId) {
+  try {
+    var raw = window.localStorage.getItem(densStorageKey(packId));
+    if (raw) return JSON.parse(raw);
+  } catch (e) { /* ignore corrupt/unavailable storage */ }
+  return [];
+}
+
 window.addEventListener('DOMContentLoaded', function () {
   var params   = new URLSearchParams(window.location.search);
   var packId   = params.get('p') || '';
   var packName = params.get('n') || '';
   var packUrl  = packId ? (API_BASE + packId) : '';
+
+  var savedDenSlugs = packId ? loadSavedDenSlugs(packId) : [];
 
   var availableRanks = [];
   RANK_DEFS.forEach(function (r) {
@@ -40,7 +74,7 @@ window.addEventListener('DOMContentLoaded', function () {
         denNum:      denNum,
         displayName: denDisplayName(r.label, denNum),
         denUrl:      API_BASE + packId + '/' + denId,
-        selected:    false,
+        selected:    savedDenSlugs.indexOf(r.slug) !== -1,
       });
     }
   });
@@ -52,7 +86,7 @@ window.addEventListener('DOMContentLoaded', function () {
     target: '#app',
     template: '#main-template',
     data: {
-      app:            'apple',
+      app:            loadSavedApp(),
       packUrl:        packUrl,
       availableRanks: availableRanks,
       dropdownOpen:   false,
@@ -82,6 +116,19 @@ window.addEventListener('DOMContentLoaded', function () {
         if (!selected.length) return 'Select den(s)…';
         return selected.map(function (r) { return r.displayName; }).join(', ');
       },
+      readyForNextSteps: function () {
+        var ranks = this.get('availableRanks');
+        if (!ranks.length) return true;
+        return ranks.some(function (r) { return r.selected; });
+      },
+      // Icon for the yellow (pack) button — black Apple mark reads well on yellow.
+      packBtnIconUrl: function () {
+        return appIconUrl(this.get('app'), '#000000');
+      },
+      // Icon for the navy (den) buttons — white Apple mark reads well on navy.
+      denBtnIconUrl: function () {
+        return appIconUrl(this.get('app'), '#ffffff');
+      },
       appNote: function () {
         var app = this.get('app');
         if (app === 'apple')   return 'Opens Apple Calendar — confirm the subscription when prompted.';
@@ -91,6 +138,19 @@ window.addEventListener('DOMContentLoaded', function () {
       },
     },
   });
+
+  ractive.observe('app', function (app) {
+    try { window.localStorage.setItem(APP_STORAGE_KEY, app); } catch (e) { /* ignore unavailable storage */ }
+  }, { init: false });
+
+  if (packId) {
+    ractive.observe('availableRanks.*.selected', function () {
+      var selectedSlugs = ractive.get('availableRanks')
+        .filter(function (r) { return r.selected; })
+        .map(function (r) { return r.slug; });
+      try { window.localStorage.setItem(densStorageKey(packId), JSON.stringify(selectedSlugs)); } catch (e) { /* ignore unavailable storage */ }
+    }, { init: false });
+  }
 
   ractive.on('toggleDropdown', function (ctx) {
     ctx.original.stopPropagation();

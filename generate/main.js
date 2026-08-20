@@ -1,3 +1,6 @@
+import { QRCodeStyling } from 'https://cdn.jsdelivr.net/npm/@liquid-js/qr-code-styling@5.5.0/lib/qr-code-styling.js';
+import BorderPlugin from 'https://cdn.jsdelivr.net/npm/@liquid-js/qr-code-styling@5.5.0/lib/border-plugin.js';
+
 var RANK_DEFS = [
   { slug: 'lion',    label: 'Lion',           grade: 'Kindergarten', key: 'l',  numKey: 'ld',  field: 'lionUrl',    numField: 'lionDenNum'    },
   { slug: 'tiger',   label: 'Tiger',          grade: '1st Grade',    key: 't',  numKey: 'td',  field: 'tigerUrl',   numField: 'tigerDenNum'   },
@@ -33,9 +36,47 @@ function buildMainUrl(packId, packName, denIds, denNums) {
   return base + '?' + params.toString();
 }
 
+var STORAGE_KEY = 'scoutCalGenerator';
+
+function loadSavedData(defaults) {
+  try {
+    var raw = window.localStorage.getItem(STORAGE_KEY);
+    if (!raw) return defaults;
+    var saved = JSON.parse(raw);
+    Object.keys(defaults).forEach(function (k) {
+      if (typeof saved[k] === 'string') defaults[k] = saved[k];
+    });
+  } catch (e) { /* ignore corrupt/unavailable storage */ }
+  return defaults;
+}
+
+function buildBorderPlugin(topText, bottomText) {
+  var text = {
+    font: 'sans-serif',
+    color: '#FFC72C',
+    size: 0.075,
+    fontWeight: 'bold',
+  };
+  topText    = (topText    || '').trim();
+  bottomText = (bottomText || '').trim();
+  if (topText)    text.top    = { content: topText };
+  if (bottomText) text.bottom = { content: bottomText };
+
+  return new BorderPlugin({
+    proportional: true,
+    size: 0.12,
+    round: 1,
+    margin: 0,
+    color: '#003F87',
+    text: (topText || bottomText) ? text : undefined,
+  });
+}
+
 window.addEventListener('DOMContentLoaded', function () {
-  var data = { packName: '', packUrl: '' };
+  var data = { packName: '', packUrl: '', borderTopText: '', borderBottomText: '' };
   RANK_DEFS.forEach(function (r) { data[r.field] = ''; data[r.numField] = ''; });
+  data = loadSavedData(data);
+  var persistedFields = Object.keys(data);
 
   var ractive = new Ractive({
     target: '#app',
@@ -81,46 +122,62 @@ window.addEventListener('DOMContentLoaded', function () {
     },
   });
 
-  var qrCode = new QRCodeStyling({
-    width: 220,
-    height: 220,
-    type: 'svg',
-    data: 'placeholder',
-    image: 'https://api.iconify.design/hugeicons:calendar-sync.svg?color=%23003F87',
-    imageOptions: {
-      margin: 4,
-      imageSize: 0.38,
-    },
-    dotsOptions: {
-      color: '#003F87',
-      type: 'dots',
-    },
-    backgroundOptions: {
-      color: '#ffffff',
-    },
-    cornersSquareOptions: {
-      type: 'extra-rounded',
-      color: '#FFC72C',
-    },
-    cornersDotOptions: {
-      type: 'dot',
-      color: '#003F87',
-    },
-    qrOptions: {
-      errorCorrectionLevel: 'H',
-    },
-  });
-  qrCode.append(document.getElementById('qr-container'));
+  ractive.observe(persistedFields.join(' '), function () {
+    var toSave = {};
+    persistedFields.forEach(function (k) { toSave[k] = ractive.get(k); });
+    try { window.localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave)); } catch (e) { /* ignore unavailable storage */ }
+  }, { init: false });
 
-  ractive.observe('generatedUrl', function (url) {
+  function baseQrOptions() {
+    return {
+      shape: 'circle',
+      image: 'https://api.iconify.design/hugeicons:calendar-sync.svg?color=%23003F87',
+      imageOptions: {
+        margin: 4,
+        imageSize: 0.38,
+      },
+      dotsOptions: {
+        color: '#003F87',
+        type: 'dots',
+      },
+      backgroundOptions: {
+        color: '#ffffff',
+        round: 1,
+        margin: 3,
+      },
+      cornersSquareOptions: {
+        type: 'extra-rounded',
+        color: '#FFC72C',
+      },
+      cornersDotOptions: {
+        type: 'dot',
+        color: '#003F87',
+      },
+      qrOptions: {
+        errorCorrectionLevel: 'H',
+      },
+    };
+  }
+
+  // Rebuild the whole QRCodeStyling instance on every change (rather than
+  // calling .update() on a shared instance) so stale plugin/text state from
+  // qr-code-styling's async draw pipeline can't accumulate on the SVG.
+  function renderQr() {
+    var url = ractive.get('generatedUrl');
     var container = document.getElementById('qr-container');
+    container.innerHTML = '';
     if (url) {
-      qrCode.update({ data: url });
+      var options = baseQrOptions();
+      options.data = url;
+      options.plugins = [buildBorderPlugin(ractive.get('borderTopText'), ractive.get('borderBottomText'))];
+      new QRCodeStyling(options).append(container);
       container.style.display = '';
     } else {
       container.style.display = 'none';
     }
-  }, { init: true });
+  }
+  ractive.observe('generatedUrl borderTopText borderBottomText', renderQr, { init: false });
+  renderQr();
 
   ractive.on('copy', function () {
     var url = ractive.get('generatedUrl');

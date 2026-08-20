@@ -34,6 +34,42 @@ html, body {
   padding: 0.85rem 1.25rem;
 }
 
+.cal-btn-icon img,
+.app-tabs .icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.cal-btn-icon {
+  flex-shrink: 0;
+  width: 1.75rem;
+  height: 1.75rem;
+  margin-right: 0.5rem;
+}
+
+.cal-btn.is-primary {
+  background-color: #FFC72C;
+  color: #003F87;
+  border-color: #FFC72C;
+}
+
+.cal-btn.is-primary:hover {
+  background-color: #f0b91d;
+  color: #003F87;
+}
+
+.cal-btn.is-info {
+  background-color: #003F87;
+  color: #ffffff;
+  border-color: #003F87;
+}
+
+.cal-btn.is-info:hover {
+  background-color: #002f66;
+  color: #ffffff;
+}
+
 .cal-btn .cal-btn-title {
   font-size: 1rem;
   font-weight: 600;
@@ -48,6 +84,14 @@ html, body {
 
 .app-selector .button {
   flex: 1;
+}
+
+.app-tab-panel {
+  border: 1px solid #dbdbdb;
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  padding: 1rem;
+  margin-top: -1px;
 }
 
 .dropdown.is-fullwidth,
@@ -172,6 +216,12 @@ html, body {
   display: flex;
   justify-content: center;
   margin-top: 1rem;
+}
+
+.qr-wrap svg {
+  width: 100%;
+  max-width: 320px;
+  height: auto;
 }
 
 .qr-wrap img {
