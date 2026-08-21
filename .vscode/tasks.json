@@ -4,7 +4,7 @@
         {
             "label": "Jekyll: serve",
             "type": "shell",
-            "command": "chruby $(cat .ruby-version); sh -c 'sleep 2; open http://127.0.0.1:4000/scout-cal/' &; bundle exec jekyll serve",
+            "command": "chruby $(cat .ruby-version); sh -c 'sleep 2; open http://127.0.0.1:4000/cub-cal/' &; bundle exec jekyll serve",
             "isBackground": true,
             "problemMatcher": [],
             "presentation": {

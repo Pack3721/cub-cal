@@ -1,5 +1,6 @@
 import { QRCodeStyling, browserUtils } from 'https://cdn.jsdelivr.net/npm/@liquid-js/qr-code-styling@5.5.0/lib/qr-code-styling.js';
 import BorderPlugin from 'https://cdn.jsdelivr.net/npm/@liquid-js/qr-code-styling@5.5.0/lib/border-plugin.js';
+import { generateKey, encryptWithKey } from '../assets/crypto.js';
 
 var RANK_DEFS = [
   { slug: 'lion',    label: 'Lion',           grade: 'Kindergarten', key: 'l',  numKey: 'ld',  field: 'lionUrl',    numField: 'lionDenNum'    },
@@ -23,17 +24,28 @@ function parseDenUrl(url) {
   return m ? { packId: m[1], denId: m[2] } : null;
 }
 
-function buildMainUrl(packId, packName, denIds, denNums) {
-  var base = window.location.origin +
+function siteBase() {
+  return window.location.origin +
     window.location.pathname.replace(/\/generate\/?.*$/, '/');
-  var params = new URLSearchParams();
-  if (packId)   params.set('p', packId);
-  if (packName) params.set('n', packName);
+}
+
+// Shared by both link modes: the same short keys either go straight into a
+// query string (plain mode) or get JSON-encoded and encrypted (encrypted-file
+// mode), so the two stay parseable by the same code on the viewer page.
+function buildParamsObject(packId, packName, denIds, denNums) {
+  var obj = {};
+  if (packId)   obj.p = packId;
+  if (packName) obj.n = packName;
   RANK_DEFS.forEach(function (r) {
-    if (denIds[r.slug])  params.set(r.key,    denIds[r.slug]);
-    if (denNums[r.slug]) params.set(r.numKey, denNums[r.slug]);
+    if (denIds[r.slug])  obj[r.key]    = denIds[r.slug];
+    if (denNums[r.slug]) obj[r.numKey] = denNums[r.slug];
   });
-  return base + '?' + params.toString();
+  return obj;
+}
+
+function buildMainUrl(packId, packName, denIds, denNums) {
+  var params = new URLSearchParams(buildParamsObject(packId, packName, denIds, denNums));
+  return siteBase() + '?' + params.toString();
 }
 
 var STORAGE_KEY = 'scoutCalGenerator';
@@ -73,10 +85,21 @@ function buildBorderPlugin(topText, bottomText) {
 }
 
 window.addEventListener('DOMContentLoaded', function () {
-  var data = { packName: '', packUrl: '', borderTopText: '', borderBottomText: '' };
+  var data = {
+    packName: '', packUrl: '', borderTopText: '', borderBottomText: '',
+    // Persisted so re-opening this page can re-encrypt an update to the
+    // same file id with the same key, keeping already-printed QR codes valid.
+    fileId: '', encryptionKey: '',
+  };
   RANK_DEFS.forEach(function (r) { data[r.field] = ''; data[r.numField] = ''; });
   data = loadSavedData(data);
   var persistedFields = Object.keys(data);
+
+  // Output of the last encrypt run — not persisted, always regenerated.
+  data.encryptedFile = '';
+  data.encryptedUrl = '';
+  data.encryptBusy = false;
+  data.encryptError = '';
 
   var ractive = new Ractive({
     target: '#app',
@@ -111,21 +134,35 @@ window.addEventListener('DOMContentLoaded', function () {
       generatedUrl: function () {
         var v = this.get('validation');
         if (!v.pack.id) return '';
-        var denIds = {}, denNums = {};
-        RANK_DEFS.forEach(function (r) {
-          if (v[r.slug].id)             denIds[r.slug]  = v[r.slug].id;
-          var num = this.get(r.numField);
-          if (num)                      denNums[r.slug] = num;
-        }, this);
-        return buildMainUrl(v.pack.id, this.get('packName'), denIds, denNums);
+        var dens = collectDens(this, v);
+        return buildMainUrl(v.pack.id, this.get('packName'), dens.ids, dens.nums);
       },
     },
   });
+
+  // Shared by generatedUrl and the encrypt handler: pulls the currently
+  // valid den ids/numbers out of the ractive instance in one place.
+  function collectDens(ractive, validation) {
+    var ids = {}, nums = {};
+    RANK_DEFS.forEach(function (r) {
+      if (validation[r.slug].id) ids[r.slug] = validation[r.slug].id;
+      var num = ractive.get(r.numField);
+      if (num) nums[r.slug] = num;
+    });
+    return { ids: ids, nums: nums };
+  }
 
   ractive.observe(persistedFields.join(' '), function () {
     var toSave = {};
     persistedFields.forEach(function (k) { toSave[k] = ractive.get(k); });
     try { window.localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave)); } catch (e) { /* ignore unavailable storage */ }
+  }, { init: false });
+
+  // Any edit invalidates a previously generated encrypted file/link, so a
+  // stale one can't be mistakenly committed after the data has moved on.
+  ractive.observe(persistedFields.join(' '), function () {
+    ractive.set('encryptedFile', '');
+    ractive.set('encryptedUrl', '');
   }, { init: false });
 
   function baseQrOptions() {
@@ -162,41 +199,135 @@ window.addEventListener('DOMContentLoaded', function () {
   // Rebuild the whole QRCodeStyling instance on every change (rather than
   // calling .update() on a shared instance) so stale plugin/text state from
   // qr-code-styling's async draw pipeline can't accumulate on the SVG.
-  var currentQrCode = null;
-  function renderQr() {
-    var url = ractive.get('generatedUrl');
-    var container = document.getElementById('qr-container');
-    container.innerHTML = '';
-    if (url) {
-      var options = baseQrOptions();
-      options.data = url;
-      options.plugins = [buildBorderPlugin(ractive.get('borderTopText'), ractive.get('borderBottomText'))];
-      currentQrCode = new QRCodeStyling(options);
-      currentQrCode.append(container);
-      container.style.display = '';
-    } else {
-      currentQrCode = null;
-      container.style.display = 'none';
-    }
+  // Used for both the plain-link QR and the encrypted-link QR.
+  function createQrController(containerId) {
+    var current = null;
+    return {
+      render: function (url, topText, bottomText) {
+        var container = document.getElementById(containerId);
+        if (!container) { current = null; return; } // e.g. encrypted QR before a file has been generated
+        container.innerHTML = '';
+        if (url) {
+          var options = baseQrOptions();
+          options.data = url;
+          options.plugins = [buildBorderPlugin(topText, bottomText)];
+          current = new QRCodeStyling(options);
+          current.append(container);
+          container.style.display = '';
+        } else {
+          current = null;
+          container.style.display = 'none';
+        }
+      },
+      get: function () { return current; },
+    };
   }
-  ractive.observe('generatedUrl borderTopText borderBottomText', renderQr, { init: false });
-  renderQr();
+
+  function savePng(qrCode, name) {
+    if (!qrCode) return;
+    name = (name || 'pack-calendar').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'pack-calendar';
+    browserUtils.download(qrCode, { name: name + '-qr', extension: 'png' }, { width: 1024, height: 1024, margin: 0 });
+  }
+
+  var mainQr = createQrController('qr-container');
+  function renderMainQr() {
+    mainQr.render(ractive.get('generatedUrl'), ractive.get('borderTopText'), ractive.get('borderBottomText'));
+  }
+  ractive.observe('generatedUrl borderTopText borderBottomText', renderMainQr, { init: false });
+  renderMainQr();
 
   ractive.on('savePng', function () {
-    if (!currentQrCode) return;
-    var name = (ractive.get('packName') || 'pack-calendar').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'pack-calendar';
-    browserUtils.download(currentQrCode, { name: name + '-qr', extension: 'png' }, { width: 1024, height: 1024, margin: 0 });
+    savePng(mainQr.get(), ractive.get('packName'));
   });
 
-  ractive.on('copy', function () {
-    var url = ractive.get('generatedUrl');
-    var btn = document.getElementById('copy-btn');
-    navigator.clipboard.writeText(url).then(function () {
+  var encQr = createQrController('qr-container-enc');
+  function renderEncQr() {
+    encQr.render(ractive.get('encryptedUrl'), ractive.get('borderTopText'), ractive.get('borderBottomText'));
+  }
+  ractive.observe('encryptedUrl borderTopText borderBottomText', renderEncQr, { init: false });
+  renderEncQr();
+
+  ractive.on('savePngEnc', function () {
+    savePng(encQr.get(), (ractive.get('packName') || 'pack-calendar').trim() + '-encrypted');
+  });
+
+  function copyFromButton(text, btnId) {
+    var btn = document.getElementById(btnId);
+    navigator.clipboard.writeText(text).then(function () {
       if (btn) {
         var orig = btn.textContent;
         btn.textContent = 'Copied!';
         setTimeout(function () { btn.textContent = orig; }, 1500);
       }
     });
+  }
+
+  ractive.on('copy', function () {
+    copyFromButton(ractive.get('generatedUrl'), 'copy-btn');
+  });
+
+  // Regenerating the key is a deliberate, separate action from encrypting —
+  // it's the one thing that breaks every QR code/link already handed out
+  // under the old key, so it gets its own button and a confirmation.
+  ractive.on('generateKey', function () {
+    var existing = ractive.get('encryptionKey');
+    if (existing && !window.confirm(
+      'Generating a new key will make any QR codes or links already created ' +
+      'with the current key stop working. Continue?'
+    )) return;
+    ractive.set('encryptionKey', generateKey());
+  });
+
+  // Encrypted-file mode: JSON-encode the same fields the plain link uses,
+  // encrypt with the saved (or freshly generated) AES-256-GCM key, and
+  // build a link that carries the file id in the query string (not secret)
+  // and the key in the URL fragment (never sent to any server). The
+  // encrypted file itself still needs to be committed to the repo by hand
+  // at data/<fileId>.json. Reusing the same key/file id lets a later update
+  // overwrite that file without breaking links already handed out.
+  ractive.on('encrypt', function () {
+    var v = ractive.get('validation');
+    if (!v.pack.id) return;
+    var fileId = (ractive.get('fileId') || '').trim();
+    if (!fileId) {
+      ractive.set('encryptError', 'Enter a file ID first.');
+      return;
+    }
+    var key = ractive.get('encryptionKey') || generateKey();
+    ractive.set('encryptionKey', key);
+    ractive.set('encryptError', '');
+    ractive.set('encryptBusy', true);
+    var dens = collectDens(ractive, v);
+    var paramsObj = buildParamsObject(v.pack.id, ractive.get('packName'), dens.ids, dens.nums);
+    encryptWithKey(key, paramsObj).then(function (file) {
+      ractive.set('encryptedFile', JSON.stringify(file));
+      ractive.set('encryptedUrl', siteBase() + '?id=' + encodeURIComponent(fileId) + '#k=' + key);
+      ractive.set('encryptBusy', false);
+    }).catch(function (err) {
+      ractive.set('encryptError', 'Encryption failed: ' + err.message);
+      ractive.set('encryptBusy', false);
+    });
+  });
+
+  ractive.on('copyEncFile', function () {
+    copyFromButton(ractive.get('encryptedFile'), 'copy-enc-file-btn');
+  });
+
+  ractive.on('downloadEncFile', function () {
+    var content = ractive.get('encryptedFile');
+    if (!content) return;
+    var fileId = (ractive.get('fileId') || 'data').trim() || 'data';
+    var url = URL.createObjectURL(new Blob([content], { type: 'application/json' }));
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = fileId + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
+  ractive.on('copyEncUrl', function () {
+    copyFromButton(ractive.get('encryptedUrl'), 'copy-enc-url-btn');
   });
 });

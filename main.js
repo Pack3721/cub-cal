@@ -1,3 +1,5 @@
+import { decryptJson } from './assets/crypto.js';
+
 var API_BASE = 'https://api.scouting.org/advancements/events/calendar/';
 
 var RANK_DEFS = [
@@ -54,8 +56,43 @@ function loadSavedDenSlugs(packId) {
   return [];
 }
 
+// Wraps a plain decrypted object in the same .get(key) interface
+// URLSearchParams has, so initApp doesn't need to know which mode it's in.
+function paramsFromObject(obj) {
+  return { get: function (key) { return obj[key] != null ? String(obj[key]) : null; } };
+}
+
+// Plain mode: everything is in the query string, e.g. ?p=123&l=456.
+// Encrypted mode: ?id=<file id>#k=<key> — the file at data/<id>.json holds
+// the same fields, AES-256-GCM encrypted with the key from the fragment
+// (which browsers never send to any server, unlike the query string).
+function resolveParams() {
+  var search = new URLSearchParams(window.location.search);
+  var id = search.get('id');
+  if (!id) return Promise.resolve(search);
+
+  var key = new URLSearchParams(window.location.hash.replace(/^#/, '')).get('k');
+  if (!key) return Promise.reject(new Error('Link is missing its decryption key.'));
+
+  return fetch('data/' + encodeURIComponent(id) + '.json')
+    .then(function (res) {
+      if (!res.ok) throw new Error('Calendar data file not found.');
+      return res.json();
+    })
+    .then(function (file) { return decryptJson(key, file); })
+    .then(paramsFromObject);
+}
+
 window.addEventListener('DOMContentLoaded', function () {
-  var params   = new URLSearchParams(window.location.search);
+  resolveParams()
+    .then(initApp)
+    .catch(function (err) {
+      console.error('Could not load calendar link:', err);
+      initApp(new URLSearchParams());
+    });
+});
+
+function initApp(params) {
   var packId   = params.get('p') || '';
   var packName = params.get('n') || '';
   var packUrl  = packId ? (API_BASE + packId) : '';
@@ -162,4 +199,4 @@ window.addEventListener('DOMContentLoaded', function () {
       ractive.set('dropdownOpen', false);
     }
   });
-});
+}

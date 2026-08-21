@@ -163,6 +163,71 @@
         {{/if}}
       </div>
 
+      {{#if hasOutput}}
+      <div class="box">
+        <h2 class="title is-6 mb-3">Encrypted Link (optional)</h2>
+        <p class="help mb-3">
+          Use this instead of the plain link above if you want to be able to update the
+          calendar info later without reprinting the QR code, and without the pack/den
+          data sitting in the repo in plain text. It requires manually committing a file
+          to this repo each time you generate or update it.
+        </p>
+        <div class="field">
+          <label class="label is-small">File ID</label>
+          <div class="control">
+            <input class="input is-small" type="text" placeholder="e.g. pack123" value="{{fileId}}">
+          </div>
+          <p class="help">Pick any short id — it becomes the filename, not a secret.</p>
+        </div>
+        <div class="field">
+          <label class="label is-small">Encryption Key</label>
+          <div class="control">
+            <input class="input is-small" type="text" placeholder="Generated automatically, or paste one back in" value="{{encryptionKey}}">
+          </div>
+          <p class="help">
+            Saved on this device so you can reuse it to update this file later — reusing the
+            same key and file ID keeps already-printed QR codes and links working. Pasting in
+            a different key switches which one gets used next.
+          </p>
+        </div>
+        <div class="buttons">
+          <button class="button is-small is-light" on-click="encrypt" disabled="{{encryptBusy}}">
+            {{encryptBusy ? 'Encrypting…' : 'Generate Encrypted File'}}
+          </button>
+          <button class="button is-small is-light" on-click="generateKey">Generate New Key</button>
+        </div>
+        <p class="help is-warning mb-0">
+          ⚠ Generating a new key breaks every QR code/link already made with the old one — only
+          do this if you're starting over, not when updating existing calendar info.
+        </p>
+        {{#if encryptError}}
+          <p class="help is-danger mt-2">{{encryptError}}</p>
+        {{/if}}
+        {{#if encryptedFile}}
+          <div class="field mt-4">
+            <label class="label is-small">Save as <code>data/{{fileId}}.json</code> in the repo</label>
+            <div class="control">
+              <textarea class="textarea is-small" rows="3" readonly>{{encryptedFile}}</textarea>
+            </div>
+            <div class="buttons mt-2">
+              <button class="button is-small is-light" id="copy-enc-file-btn" on-click="copyEncFile">Copy JSON</button>
+              <button class="button is-small is-light" on-click="downloadEncFile">Download JSON</button>
+            </div>
+          </div>
+          <div class="field mt-4 mb-0">
+            <label class="label is-small">Link (share only after the file above is committed)</label>
+            <div class="url-display mb-3">{{encryptedUrl}}</div>
+            <button class="button is-small is-light" id="copy-enc-url-btn" on-click="copyEncUrl">Copy Link</button>
+          </div>
+          <div id="qr-container-enc" class="qr-wrap mt-4"></div>
+          <p class="help has-text-centered mt-2">QR code for the link above — don't share it until the file is committed</p>
+          <div class="has-text-centered mt-2">
+            <button class="button is-small is-light" on-click="savePngEnc">Save PNG</button>
+          </div>
+        {{/if}}
+      </div>
+      {{/if}}
+
     </div>
   </section>
 {% endraw %}
