@@ -69,7 +69,11 @@ function loadSavedData(defaults) {
     if (!raw) return defaults;
     var saved = JSON.parse(raw);
     Object.keys(defaults).forEach(function (k) {
-      if (typeof saved[k] === 'string') defaults[k] = saved[k];
+      // Most fields are text inputs and save as strings, but the den-number
+      // fields are <input type="number">, which Ractive two-way binds as a
+      // JS number — accept both so those don't silently fail to restore.
+      var v = saved[k];
+      if (typeof v === 'string' || typeof v === 'number') defaults[k] = v;
     });
   } catch (e) { /* ignore corrupt/unavailable storage */ }
   return defaults;
