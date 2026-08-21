@@ -104,14 +104,17 @@ function initApp(params) {
   RANK_DEFS.forEach(function (r) {
     var denId  = params.get(r.key)    || '';
     var denNum = params.get(r.numKey) || '';
-    if (denId && packId) {
+    // A den with a number but no calendar yet still shows up (so families
+    // know it exists and can pick it), just without a working calendar link.
+    if ((denId || denNum) && packId) {
       availableRanks.push({
         slug:        r.slug,
         label:       r.label,
         grade:       r.grade,
         denNum:      denNum,
         displayName: denDisplayName(r.label, denNum),
-        denUrl:      API_BASE + packId + '/' + denId,
+        denUrl:      denId ? (API_BASE + packId + '/' + denId) : '',
+        hasCalendar: !!denId,
         docUrl:      params.get(r.docKey) || '',
         selected:    savedDenSlugs.indexOf(r.slug) !== -1,
       });
@@ -144,6 +147,7 @@ function initApp(params) {
               label:       r.label,
               grade:       r.grade,
               displayName: r.displayName,
+              hasCalendar: r.hasCalendar,
               denCalLink:  makeCalLink(app, r.denUrl),
             };
           });

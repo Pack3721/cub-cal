@@ -100,22 +100,32 @@
               {{/if}}
             {{/if}}
             {{#each selectedRanks}}
-              {{#if ~/app === 'apple'}}
-                <a class="button is-info is-fullwidth cal-btn" href="{{denCalLink}}">
-                  <span class="icon cal-btn-icon"><img src="{{~/denBtnIconUrl}}" alt=""></span>
-                  <span>
-                    <span class="cal-btn-title">Add {{displayName}} Calendar</span>
-                    <span class="cal-btn-sub">{{grade}} den meetings and events</span>
-                  </span>
-                </a>
+              {{#if hasCalendar}}
+                {{#if ~/app === 'apple'}}
+                  <a class="button is-info is-fullwidth cal-btn" href="{{denCalLink}}">
+                    <span class="icon cal-btn-icon"><img src="{{~/denBtnIconUrl}}" alt=""></span>
+                    <span>
+                      <span class="cal-btn-title">Add {{displayName}} Calendar</span>
+                      <span class="cal-btn-sub">{{grade}} den meetings and events</span>
+                    </span>
+                  </a>
+                {{else}}
+                  <a class="button is-info is-fullwidth cal-btn" href="{{denCalLink}}" target="_blank" rel="noopener">
+                    <span class="icon cal-btn-icon"><img src="{{~/denBtnIconUrl}}" alt=""></span>
+                    <span>
+                      <span class="cal-btn-title">Add {{displayName}} Calendar</span>
+                      <span class="cal-btn-sub">{{grade}} den meetings and events</span>
+                    </span>
+                  </a>
+                {{/if}}
               {{else}}
-                <a class="button is-info is-fullwidth cal-btn" href="{{denCalLink}}" target="_blank" rel="noopener">
-                  <span class="icon cal-btn-icon"><img src="{{~/denBtnIconUrl}}" alt=""></span>
+                <button class="button is-fullwidth cal-btn cal-btn-tbd" disabled>
+                  <span class="icon cal-btn-icon"><img src="https://api.iconify.design/mdi:calendar-clock-outline.svg?color=%23999999" alt=""></span>
                   <span>
-                    <span class="cal-btn-title">Add {{displayName}} Calendar</span>
-                    <span class="cal-btn-sub">{{grade}} den meetings and events</span>
+                    <span class="cal-btn-title">{{displayName}} Calendar</span>
+                    <span class="cal-btn-sub">TBD — not published yet</span>
                   </span>
-                </a>
+                </button>
               {{/if}}
             {{/each}}
           </div>
