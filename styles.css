@@ -70,6 +70,17 @@ html, body {
   color: #ffffff;
 }
 
+.cal-btn.is-link {
+  background-color: #ffffff;
+  color: #003F87;
+  border-color: #003F87;
+}
+
+.cal-btn.is-link:hover {
+  background-color: #f5f7fb;
+  color: #003F87;
+}
+
 .cal-btn .cal-btn-title {
   font-size: 1rem;
   font-weight: 600;

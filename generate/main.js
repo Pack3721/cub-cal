@@ -3,12 +3,12 @@ import BorderPlugin from 'https://cdn.jsdelivr.net/npm/@liquid-js/qr-code-stylin
 import { generateKey, encryptWithKey } from '../assets/crypto.js';
 
 var RANK_DEFS = [
-  { slug: 'lion',    label: 'Lion',           grade: 'Kindergarten', key: 'l',  numKey: 'ld',  field: 'lionUrl',    numField: 'lionDenNum'    },
-  { slug: 'tiger',   label: 'Tiger',          grade: '1st Grade',    key: 't',  numKey: 'td',  field: 'tigerUrl',   numField: 'tigerDenNum'   },
-  { slug: 'wolf',    label: 'Wolf',           grade: '2nd Grade',    key: 'w',  numKey: 'wd',  field: 'wolfUrl',    numField: 'wolfDenNum'    },
-  { slug: 'bear',    label: 'Bear',           grade: '3rd Grade',    key: 'b',  numKey: 'bd',  field: 'bearUrl',    numField: 'bearDenNum'    },
-  { slug: 'webelos', label: 'Webelos',        grade: '4th Grade',    key: 'we', numKey: 'wed', field: 'webelosUrl', numField: 'webelosDenNum' },
-  { slug: 'aol',     label: 'Arrow of Light', grade: '5th Grade',    key: 'a',  numKey: 'ad',  field: 'aolUrl',     numField: 'aolDenNum'     },
+  { slug: 'lion',    label: 'Lion',           grade: 'Kindergarten', key: 'l',  numKey: 'ld',  field: 'lionUrl',    numField: 'lionDenNum',    docKey: 'ly',  docField: 'lionDocUrl'    },
+  { slug: 'tiger',   label: 'Tiger',          grade: '1st Grade',    key: 't',  numKey: 'td',  field: 'tigerUrl',   numField: 'tigerDenNum',   docKey: 'ty',  docField: 'tigerDocUrl'   },
+  { slug: 'wolf',    label: 'Wolf',           grade: '2nd Grade',    key: 'w',  numKey: 'wd',  field: 'wolfUrl',    numField: 'wolfDenNum',    docKey: 'wy',  docField: 'wolfDocUrl'    },
+  { slug: 'bear',    label: 'Bear',           grade: '3rd Grade',    key: 'b',  numKey: 'bd',  field: 'bearUrl',    numField: 'bearDenNum',    docKey: 'by',  docField: 'bearDocUrl'    },
+  { slug: 'webelos', label: 'Webelos',        grade: '4th Grade',    key: 'we', numKey: 'wed', field: 'webelosUrl', numField: 'webelosDenNum', docKey: 'wey', docField: 'webelosDocUrl' },
+  { slug: 'aol',     label: 'Arrow of Light', grade: '5th Grade',    key: 'a',  numKey: 'ad',  field: 'aolUrl',     numField: 'aolDenNum',     docKey: 'ay',  docField: 'aolDocUrl'     },
 ];
 
 var PACK_URL_RE = /^https:\/\/api\.scouting\.org\/advancements\/events\/calendar\/(\d+)\/?$/;
@@ -46,6 +46,19 @@ function buildParamsObject(packId, packName, denIds, denNums) {
 function buildMainUrl(packId, packName, denIds, denNums) {
   var params = new URLSearchParams(buildParamsObject(packId, packName, denIds, denNums));
   return siteBase() + '?' + params.toString();
+}
+
+// "Year at a glance" doc links — encrypted-link mode only. Keeping these out
+// of buildParamsObject means they never bloat the plain link's query string.
+function buildDocParamsObject(packDocUrl, denDocUrls) {
+  var obj = {};
+  packDocUrl = (packDocUrl || '').trim();
+  if (packDocUrl) obj.py = packDocUrl;
+  RANK_DEFS.forEach(function (r) {
+    var url = (denDocUrls[r.slug] || '').trim();
+    if (url) obj[r.docKey] = url;
+  });
+  return obj;
 }
 
 var STORAGE_KEY = 'scoutCalGenerator';
@@ -90,8 +103,10 @@ window.addEventListener('DOMContentLoaded', function () {
     // Persisted so re-opening this page can re-encrypt an update to the
     // same file id with the same key, keeping already-printed QR codes valid.
     fileId: '', encryptionKey: '',
+    // "Year at a glance" doc link for the pack — encrypted-link mode only.
+    packDocUrl: '',
   };
-  RANK_DEFS.forEach(function (r) { data[r.field] = ''; data[r.numField] = ''; });
+  RANK_DEFS.forEach(function (r) { data[r.field] = ''; data[r.numField] = ''; data[r.docField] = ''; });
   data = loadSavedData(data);
   var persistedFields = Object.keys(data);
 
@@ -150,6 +165,17 @@ window.addEventListener('DOMContentLoaded', function () {
       if (num) nums[r.slug] = num;
     });
     return { ids: ids, nums: nums };
+  }
+
+  // Pulls the per-den "year at a glance" doc links out of the ractive
+  // instance, keyed by rank slug like collectDens.
+  function collectDocs(ractive) {
+    var docs = {};
+    RANK_DEFS.forEach(function (r) {
+      var url = ractive.get(r.docField);
+      if (url) docs[r.slug] = url;
+    });
+    return docs;
   }
 
   ractive.observe(persistedFields.join(' '), function () {
@@ -299,6 +325,8 @@ window.addEventListener('DOMContentLoaded', function () {
     ractive.set('encryptBusy', true);
     var dens = collectDens(ractive, v);
     var paramsObj = buildParamsObject(v.pack.id, ractive.get('packName'), dens.ids, dens.nums);
+    var docParams = buildDocParamsObject(ractive.get('packDocUrl'), collectDocs(ractive));
+    Object.keys(docParams).forEach(function (k) { paramsObj[k] = docParams[k]; });
     encryptWithKey(key, paramsObj).then(function (file) {
       ractive.set('encryptedFile', JSON.stringify(file));
       ractive.set('encryptedUrl', siteBase() + '?id=' + encodeURIComponent(fileId) + '#k=' + key);

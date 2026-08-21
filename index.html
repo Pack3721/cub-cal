@@ -126,6 +126,32 @@
         </div>
         {{/if}}
 
+        {{#if readyForNextSteps && hasAnyDocs}}
+        <div class="box">
+          <p class="label mb-3">{{docsStepLabel}} See the full year at a glance</p>
+          <div class="buttons is-flex-direction-column">
+            {{#if packDocUrl}}
+              <a class="button is-link is-fullwidth cal-btn" href="{{packDocUrl}}" target="_blank" rel="noopener">
+                <span class="icon cal-btn-icon"><img src="https://api.iconify.design/mdi:file-document-outline.svg?color=%23003F87" alt=""></span>
+                <span>
+                  <span class="cal-btn-title">Pack Year at a Glance</span>
+                  <span class="cal-btn-sub">Full-year plan for the whole pack</span>
+                </span>
+              </a>
+            {{/if}}
+            {{#each selectedDocs}}
+              <a class="button is-link is-fullwidth cal-btn" href="{{docUrl}}" target="_blank" rel="noopener">
+                <span class="icon cal-btn-icon"><img src="https://api.iconify.design/mdi:file-document-outline.svg?color=%23003F87" alt=""></span>
+                <span>
+                  <span class="cal-btn-title">{{label}} Year at a Glance</span>
+                  <span class="cal-btn-sub">{{grade}} full-year plan</span>
+                </span>
+              </a>
+            {{/each}}
+          </div>
+        </div>
+        {{/if}}
+
       </div>
     </section>
   {{else}}

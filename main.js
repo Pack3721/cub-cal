@@ -3,12 +3,12 @@ import { decryptJson } from './assets/crypto.js';
 var API_BASE = 'https://api.scouting.org/advancements/events/calendar/';
 
 var RANK_DEFS = [
-  { slug: 'lion',    label: 'Lion',           grade: 'Kindergarten', key: 'l',  numKey: 'ld'  },
-  { slug: 'tiger',   label: 'Tiger',          grade: '1st Grade',    key: 't',  numKey: 'td'  },
-  { slug: 'wolf',    label: 'Wolf',           grade: '2nd Grade',    key: 'w',  numKey: 'wd'  },
-  { slug: 'bear',    label: 'Bear',           grade: '3rd Grade',    key: 'b',  numKey: 'bd'  },
-  { slug: 'webelos', label: 'Webelos',        grade: '4th Grade',    key: 'we', numKey: 'wed' },
-  { slug: 'aol',     label: 'Arrow of Light', grade: '5th Grade',    key: 'a',  numKey: 'ad'  },
+  { slug: 'lion',    label: 'Lion',           grade: 'Kindergarten', key: 'l',  numKey: 'ld',  docKey: 'ly'  },
+  { slug: 'tiger',   label: 'Tiger',          grade: '1st Grade',    key: 't',  numKey: 'td',  docKey: 'ty'  },
+  { slug: 'wolf',    label: 'Wolf',           grade: '2nd Grade',    key: 'w',  numKey: 'wd',  docKey: 'wy'  },
+  { slug: 'bear',    label: 'Bear',           grade: '3rd Grade',    key: 'b',  numKey: 'bd',  docKey: 'by'  },
+  { slug: 'webelos', label: 'Webelos',        grade: '4th Grade',    key: 'we', numKey: 'wed', docKey: 'wey' },
+  { slug: 'aol',     label: 'Arrow of Light', grade: '5th Grade',    key: 'a',  numKey: 'ad',  docKey: 'ay'  },
 ];
 
 function makeCalLink(app, url) {
@@ -96,6 +96,7 @@ function initApp(params) {
   var packId   = params.get('p') || '';
   var packName = params.get('n') || '';
   var packUrl  = packId ? (API_BASE + packId) : '';
+  var packDocUrl = params.get('py') || '';
 
   var savedDenSlugs = packId ? loadSavedDenSlugs(packId) : [];
 
@@ -111,6 +112,7 @@ function initApp(params) {
         denNum:      denNum,
         displayName: denDisplayName(r.label, denNum),
         denUrl:      API_BASE + packId + '/' + denId,
+        docUrl:      params.get(r.docKey) || '',
         selected:    savedDenSlugs.indexOf(r.slug) !== -1,
       });
     }
@@ -125,6 +127,7 @@ function initApp(params) {
     data: {
       app:            loadSavedApp(),
       packUrl:        packUrl,
+      packDocUrl:     packDocUrl,
       availableRanks: availableRanks,
       dropdownOpen:   false,
     },
@@ -157,6 +160,20 @@ function initApp(params) {
         var ranks = this.get('availableRanks');
         if (!ranks.length) return true;
         return ranks.some(function (r) { return r.selected; });
+      },
+      // "Year at a glance" doc links — only ever present when the link came
+      // from an encrypted file, since the plain query-string link never
+      // carries these fields.
+      selectedDocs: function () {
+        return this.get('availableRanks')
+          .filter(function (r) { return r.selected && r.docUrl; })
+          .map(function (r) { return { label: r.label, grade: r.grade, docUrl: r.docUrl }; });
+      },
+      hasAnyDocs: function () {
+        return !!(this.get('packDocUrl') || this.get('selectedDocs').length);
+      },
+      docsStepLabel: function () {
+        return (this.get('availableRanks').length ? '3.' : '2.');
       },
       // Icon for the yellow (pack) button — black Apple mark reads well on yellow.
       packBtnIconUrl: function () {
