@@ -172,6 +172,38 @@
           data sitting in the repo in plain text. It requires manually committing a file
           to this repo each time you generate or update it.
         </p>
+        <div class="field">
+          <label class="label is-small">File ID</label>
+          <div class="control">
+            <input class="input is-small" type="text" placeholder="e.g. pack123" value="{{fileId}}">
+          </div>
+          <p class="help">Pick any short id — it becomes the filename, not a secret.</p>
+        </div>
+        <div class="field">
+          <label class="label is-small">Encryption Key</label>
+          <div class="control">
+            <input class="input is-small" type="text" placeholder="Generated automatically, or paste one back in" value="{{encryptionKey}}">
+          </div>
+          <p class="help">
+            Saved on this device so you can reuse it to update this file later — reusing the
+            same key and file ID keeps already-printed QR codes and links working. Pasting in
+            a different key switches which one gets used next.
+          </p>
+        </div>
+        <div class="buttons">
+          <button class="button is-small is-light" on-click="importEncrypted" disabled="{{importBusy}}">
+            {{importBusy ? 'Importing…' : 'Import Settings'}}
+          </button>
+          <button class="button is-small is-light" on-click="generateKey">Generate New Key</button>
+        </div>
+        <p class="help">
+          Already have a File ID and Key from before? Import loads that file's settings into
+          this form so you can pick up where you left off.
+        </p>
+        {{#if importError}}
+          <p class="help is-danger mt-2">{{importError}}</p>
+        {{/if}}
+        <hr>
         <h3 class="title is-7 mb-2">Full Year at a Glance (optional)</h3>
         <p class="help mb-3">
           Link to a full-year plan — a Google Doc, PDF, whatever's easiest. Shown as an
@@ -220,33 +252,14 @@
           </div>
         </div>
         <hr>
-        <div class="field">
-          <label class="label is-small">File ID</label>
-          <div class="control">
-            <input class="input is-small" type="text" placeholder="e.g. pack123" value="{{fileId}}">
-          </div>
-          <p class="help">Pick any short id — it becomes the filename, not a secret.</p>
-        </div>
-        <div class="field">
-          <label class="label is-small">Encryption Key</label>
-          <div class="control">
-            <input class="input is-small" type="text" placeholder="Generated automatically, or paste one back in" value="{{encryptionKey}}">
-          </div>
-          <p class="help">
-            Saved on this device so you can reuse it to update this file later — reusing the
-            same key and file ID keeps already-printed QR codes and links working. Pasting in
-            a different key switches which one gets used next.
-          </p>
-        </div>
         <div class="buttons">
           <button class="button is-small is-light" on-click="encrypt" disabled="{{encryptBusy}}">
             {{encryptBusy ? 'Encrypting…' : 'Generate Encrypted File'}}
           </button>
-          <button class="button is-small is-light" on-click="generateKey">Generate New Key</button>
         </div>
         <p class="help is-warning mb-0">
-          ⚠ Generating a new key breaks every QR code/link already made with the old one — only
-          do this if you're starting over, not when updating existing calendar info.
+          ⚠ Using "Generate New Key" above breaks every QR code/link already made with the old
+          one — only do that if you're starting over, not when updating existing calendar info.
         </p>
         {{#if encryptError}}
           <p class="help is-danger mt-2">{{encryptError}}</p>

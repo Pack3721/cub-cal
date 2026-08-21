@@ -1,6 +1,6 @@
 import { QRCodeStyling, browserUtils } from 'https://cdn.jsdelivr.net/npm/@liquid-js/qr-code-styling@5.5.0/lib/qr-code-styling.js';
 import BorderPlugin from 'https://cdn.jsdelivr.net/npm/@liquid-js/qr-code-styling@5.5.0/lib/border-plugin.js';
-import { generateKey, encryptWithKey } from '../assets/crypto.js';
+import { generateKey, encryptWithKey, decryptJson } from '../assets/crypto.js';
 
 var RANK_DEFS = [
   { slug: 'lion',    label: 'Lion',           grade: 'Kindergarten', key: 'l',  numKey: 'ld',  field: 'lionUrl',    numField: 'lionDenNum',    docKey: 'ly',  docField: 'lionDocUrl'    },
@@ -11,6 +11,7 @@ var RANK_DEFS = [
   { slug: 'aol',     label: 'Arrow of Light', grade: '5th Grade',    key: 'a',  numKey: 'ad',  field: 'aolUrl',     numField: 'aolDenNum',     docKey: 'ay',  docField: 'aolDocUrl'     },
 ];
 
+var API_BASE = 'https://api.scouting.org/advancements/events/calendar/';
 var PACK_URL_RE = /^https:\/\/api\.scouting\.org\/advancements\/events\/calendar\/(\d+)\/?$/;
 var DEN_URL_RE  = /^https:\/\/api\.scouting\.org\/advancements\/events\/calendar\/(\d+)\/(\d+)\/?$/;
 
@@ -119,6 +120,8 @@ window.addEventListener('DOMContentLoaded', function () {
   data.encryptedUrl = '';
   data.encryptBusy = false;
   data.encryptError = '';
+  data.importBusy = false;
+  data.importError = '';
 
   var ractive = new Ractive({
     target: '#app',
@@ -306,6 +309,45 @@ window.addEventListener('DOMContentLoaded', function () {
       'with the current key stop working. Continue?'
     )) return;
     ractive.set('encryptionKey', generateKey());
+  });
+
+  // Loads an existing encrypted file back into the form, using whatever
+  // file ID and key are currently in those fields — the same reuse path
+  // that lets an update be re-encrypted under the same key. Handy for
+  // picking up an existing pack's settings on a different device, or
+  // after clearing local storage.
+  ractive.on('importEncrypted', function () {
+    var fileId = (ractive.get('fileId') || '').trim();
+    var key = (ractive.get('encryptionKey') || '').trim();
+    if (!fileId || !key) {
+      ractive.set('importError', 'Enter both a file ID and key to import.');
+      return;
+    }
+    ractive.set('importError', '');
+    ractive.set('importBusy', true);
+    fetch('../data/' + encodeURIComponent(fileId) + '.json')
+      .then(function (res) {
+        if (!res.ok) throw new Error('File not found.');
+        return res.json();
+      })
+      .then(function (file) { return decryptJson(key, file); })
+      .then(function (obj) {
+        var packId = obj.p || '';
+        ractive.set('packUrl', packId ? (API_BASE + packId) : '');
+        ractive.set('packName', obj.n || '');
+        ractive.set('packDocUrl', obj.py || '');
+        RANK_DEFS.forEach(function (r) {
+          var denId = obj[r.key];
+          ractive.set(r.field, (denId && packId) ? (API_BASE + packId + '/' + denId) : '');
+          ractive.set(r.numField, obj[r.numKey] || '');
+          ractive.set(r.docField, obj[r.docKey] || '');
+        });
+        ractive.set('importBusy', false);
+      })
+      .catch(function (err) {
+        ractive.set('importError', 'Import failed: ' + err.message);
+        ractive.set('importBusy', false);
+      });
   });
 
   // Encrypted-file mode: JSON-encode the same fields the plain link uses,
