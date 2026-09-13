@@ -148,6 +148,7 @@ function initApp(params) {
               grade:       r.grade,
               displayName: r.displayName,
               hasCalendar: r.hasCalendar,
+              hasDocUrl:   !!r.docUrl,
               denCalLink:  makeCalLink(app, r.denUrl),
             };
           });
