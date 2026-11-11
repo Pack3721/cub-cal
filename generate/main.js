@@ -201,7 +201,7 @@ window.addEventListener('DOMContentLoaded', function () {
   function baseQrOptions() {
     return {
       shape: 'circle',
-      image: 'https://api.iconify.design/hugeicons:calendar-sync.svg?color=%23003F87',
+      image: 'https://api.iconify.design/hugeicons/calendar-sync.svg?color=%23003F87',
       imageOptions: {
         margin: 1,
         imageSize: 0.38,

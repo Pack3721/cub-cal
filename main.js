@@ -27,9 +27,9 @@ function denDisplayName(label, denNum) {
 // Apple's mark is monochrome, so it needs a color that fits the button
 // background; Google/Outlook are already full-color and work on either.
 function appIconUrl(app, appleColor) {
-  if (app === 'google')  return 'https://api.iconify.design/logos:google-icon.svg';
-  if (app === 'outlook') return 'https://api.iconify.design/vscode-icons:file-type-outlook.svg';
-  return 'https://api.iconify.design/mdi:apple.svg?color=' + encodeURIComponent(appleColor);
+  if (app === 'google')  return 'https://api.iconify.design/logos/google-icon.svg';
+  if (app === 'outlook') return 'https://api.iconify.design/vscode-icons/file-type-outlook.svg';
+  return 'https://api.iconify.design/mdi/apple.svg?color=' + encodeURIComponent(appleColor);
 }
 
 // App choice is remembered globally (not tied to a pack); den selections
