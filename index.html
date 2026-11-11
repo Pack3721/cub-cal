@@ -60,19 +60,19 @@
             <ul>
               <li class="{{app === 'apple' ? 'is-active' : ''}}">
                 <a on-click="@this.set('app', 'apple')">
-                  <span class="icon is-small"><img src="{{ '/assets/icons/apple-logo.svg' | relative_url }}" alt=""></span>
+                  <span class="icon is-small"><img src="assets/icons/apple-logo.svg" alt=""></span>
                   <span>Apple Calendar</span>
                 </a>
               </li>
               <li class="{{app === 'google' ? 'is-active' : ''}}">
                 <a on-click="@this.set('app', 'google')">
-                  <span class="icon is-small"><img src="{{ '/assets/icons/google.svg' | relative_url }}" alt=""></span>
+                  <span class="icon is-small"><img src="assets/icons/google.svg" alt=""></span>
                   <span>Google Calendar</span>
                 </a>
               </li>
               <li class="{{app === 'outlook' ? 'is-active' : ''}}">
                 <a on-click="@this.set('app', 'outlook')">
-                  <span class="icon is-small"><img src="{{ '/assets/icons/outlook.svg' | relative_url }}" alt=""></span>
+                  <span class="icon is-small"><img src="assets/icons/outlook.svg" alt=""></span>
                   <span>Outlook</span>
                 </a>
               </li>
@@ -120,7 +120,7 @@
                 {{/if}}
               {{else}}
                 <button class="button is-fullwidth cal-btn cal-btn-tbd" disabled>
-                  <span class="icon cal-btn-icon"><img src="{{ '/assets/icons/calendar-clock.svg' | relative_url }}" alt=""></span>
+                  <span class="icon cal-btn-icon"><img src="assets/icons/calendar-clock.svg" alt=""></span>
                   <span>
                     <span class="cal-btn-title">{{displayName}} Calendar</span>
                     <span class="cal-btn-sub">{{#if hasDocUrl}}See full-year plan below{{else}}TBD — not published yet{{/if}}</span>
@@ -142,7 +142,7 @@
           <div class="buttons is-flex-direction-column">
             {{#if packDocUrl}}
               <a class="button is-link is-fullwidth cal-btn" href="{{packDocUrl}}" target="_blank" rel="noopener">
-                <span class="icon cal-btn-icon"><img src="{{ '/assets/icons/file-document.svg' | relative_url }}" alt=""></span>
+                <span class="icon cal-btn-icon"><img src="assets/icons/file-document.svg" alt=""></span>
                 <span>
                   <span class="cal-btn-title">Pack Year at a Glance</span>
                   <span class="cal-btn-sub">Full-year plan for the whole pack</span>
@@ -151,7 +151,7 @@
             {{/if}}
             {{#each selectedDocs}}
               <a class="button is-link is-fullwidth cal-btn" href="{{docUrl}}" target="_blank" rel="noopener">
-                <span class="icon cal-btn-icon"><img src="{{ '/assets/icons/file-document.svg' | relative_url }}" alt=""></span>
+                <span class="icon cal-btn-icon"><img src="assets/icons/file-document.svg" alt=""></span>
                 <span>
                   <span class="cal-btn-title">{{label}} Year at a Glance</span>
                   <span class="cal-btn-sub">{{grade}} full-year plan</span>
