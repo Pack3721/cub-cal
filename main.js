@@ -24,12 +24,18 @@ function denDisplayName(label, denNum) {
   return denNum ? label + ' Den ' + denNum : label + ' Den';
 }
 
-// Apple's mark is monochrome, so it needs a color that fits the button
+// Icons are self-hosted SVGs (originally from Iconify) so the page doesn't
+// depend on a third-party API at runtime.
+function iconUrl(name) {
+  return new URL('./assets/icons/' + name + '.svg', import.meta.url).href;
+}
+
+// Apple's mark is monochrome, so it needs a variant that fits the button
 // background; Google/Outlook are already full-color and work on either.
-function appIconUrl(app, appleColor) {
-  if (app === 'google')  return 'https://api.iconify.design/logos/google-icon.svg';
-  if (app === 'outlook') return 'https://api.iconify.design/vscode-icons/file-type-outlook.svg';
-  return 'https://api.iconify.design/mdi/apple.svg?color=' + encodeURIComponent(appleColor);
+function appIconUrl(app, appleVariant) {
+  if (app === 'google')  return iconUrl('google');
+  if (app === 'outlook') return iconUrl('outlook');
+  return iconUrl('apple-' + appleVariant);
 }
 
 // App choice is remembered globally (not tied to a pack); den selections
@@ -182,11 +188,11 @@ function initApp(params) {
       },
       // Icon for the yellow (pack) button — black Apple mark reads well on yellow.
       packBtnIconUrl: function () {
-        return appIconUrl(this.get('app'), '#000000');
+        return appIconUrl(this.get('app'), 'black');
       },
       // Icon for the navy (den) buttons — white Apple mark reads well on navy.
       denBtnIconUrl: function () {
-        return appIconUrl(this.get('app'), '#ffffff');
+        return appIconUrl(this.get('app'), 'white');
       },
       appNote: function () {
         var app = this.get('app');
